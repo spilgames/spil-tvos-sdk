@@ -15,3 +15,12 @@ Instead of step 3 it is also possible to run the setup script from the terminal 
 ## Documentation
 
 http://www.spilgames.com/developers/integration/ios/ios-get-started/
+
+## Default config
+
+Spil SDK (tvOS) uses App Lovin for ads, include the SDK key in the defaultGameConfig.json to use it:
+{
+    "iosSdkConfig": {
+        "applovin": "SDK_KEY_PROVIDED_BY_SPILGAMES"
+    }
+}

@@ -1,29 +1,5 @@
 {
-    "androidSdkConfig":{
-        "chartBoostAppId":"YOUR-CHARTBOOST-APP-ID",
-        "chartBoostAppSignature":"YOUR-CHARTBOOST-APP-SIGNATURE",
-        "googleAnalyticsId": "GOOGLE-ANALYTICS-ID",
-        "googleIAPKey": "GOOGLE-IAP-KEY"
-    },
-    "iosSdkConfig":{
-        "googleAnalyticsId":"UA-55365967-3",
-        "adjustAppToken":"cyafkpw8soow",
-        "zendeskSubdomain":"https://spilapps.zendesk.com",
-        "zendeskAppId":"73fc3647bd842920d20862af48414472ae0c607c9e5d414c",
-        "zendeskOauthClientId":"mobile_sdk_client_9fcb4e68b1c9094237f8",
-        "zendeskCustomTheme":{
-            "customizeNavBar":"true",
-            "navBarItemsColor":"#000000",
-            "navBarTextColor":"#000000",
-            "navBarTintColor":"#FFFFFF",
-            "primaryTextColor":"#000000",
-            "primaryBackgroundColor":"#FFFFFF",
-            "secondaryBackgroundColor":"#DDDDDD",
-            "emptyBackgroundColor":"#AAAAAA",
-            "metaTextColor":"#111111",
-            "separatorColor":"#555555",
-            "inputFieldTextColor":"#000000",
-            "inputFieldBackgroundColor":"#FFFFFF"
-        }
+    "iosSdkConfig": {
+        "applovin": "BZUN5Or6AWK0snLO4E2IVsXMD00rL9MWksuqEkwOFFP60lU5-XNTNwqbxrRG-oniefXtORFdhfkhODoNmAr84f"
     }
 }
