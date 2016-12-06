@@ -1,0 +1,6 @@
+framework module SpilTV {
+  umbrella header "Spil.h"
+
+  export *
+  module * { export * }
+}

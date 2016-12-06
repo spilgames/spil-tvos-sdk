@@ -1,0 +1,65 @@
+{
+  "items": [
+    {
+      "category":0,
+      "id":10,
+      "name":"Axe",
+      "type":0
+    },
+    {
+      "category":0,
+      "id":7,
+      "name":"Sword",
+      "type":0
+    }
+  ],
+  "bundles": [
+    {
+      "id":10,
+      "items":[
+        {
+          "amount":1,
+          "id":10
+
+        }
+      ],
+      "name":"Axe Bundle",
+      "prices":[
+        {
+          "currencyId":13,
+          "value":100
+        }
+      ]
+    },
+    {
+      "id":7,
+      "items":[
+        {
+          "amount":2,
+          "id":7
+        }
+      ],
+      "name":"Swords Bundle",
+      "prices":[
+        {
+          "currencyId":22,
+          "value":200
+        }
+      ]
+    }
+  ],
+  "currencies": [
+    {
+      "category":0,
+      "id":22,
+      "name":"Diamonds",
+      "type":0
+    },
+    {
+      "category":0,
+      "id":13,
+      "name":"Gold",
+      "type":0
+    }
+  ]
+}

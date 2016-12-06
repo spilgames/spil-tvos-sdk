@@ -1,0 +1,112 @@
+{
+    "items": [
+              {
+              "id": 1,
+              "name": "Sword",
+              "category": 2,
+              "type": 0
+              }, {
+              "id": 2,
+              "name": "Shield",
+              "category": 2,
+              "type": 0
+              }, {
+              "id": 3,
+              "name": "Axe",
+              "category": 2,
+              "type": 0
+              }, {
+              "id": 4,
+              "name": "Spear",
+              "category": 2,
+              "type": 0
+              }
+              ],
+    "bundles": [
+                {
+                "id": 1,
+                "name": "Sword",
+                "prices": [
+                           {
+                           "currencyId": 1,
+                           "value": 2
+                           }
+                           ],
+                "items": [
+                          {
+                          "id": 1,
+                          "amount": 1
+                          }
+                          ]
+                },
+                {
+                "id": 2,
+                "name": "Shield",
+                "prices": [
+                           {
+                           "currencyId": 1,
+                           "value": 4
+                           }
+                           ],
+                "items": [
+                          {
+                          "id": 2,
+                          "amount": 1
+                          }
+                          ]
+                },
+                {
+                "id": 3,
+                "name": "Weapons",
+                "prices": [
+                           {
+                           "currencyId": 2,
+                           "value": 50
+                           }
+                           ],
+                "items": [
+                          {
+                          "id": 1,
+                          "amount": 1
+                          },
+                          {
+                          "id": 3,
+                          "amount": 1
+                          },
+                          {
+                          "id": 4,
+                          "amount": 1
+                          }
+                          ]
+                },
+                {
+                "id": 4,
+                "name": "Warior",
+                "prices": [
+                           {
+                           "currencyId": 1,
+                           "price": 20
+                           }
+                           ],
+                "items": [
+                          {
+                          "id": 4,
+                          "amount": 1
+                          }
+                          ]
+                }
+                ],
+    "currencies": [
+                   {
+                   "id": 1,
+                   "name": "Coins",
+                   "category": 0,
+                   "type": 0
+                   }, {
+                   "id": 2,
+                   "name": "Diamonds",
+                   "category": 0,
+                   "type": 1
+                   }
+                   ]
+}

@@ -1,0 +1,26 @@
+{
+  "wallet":
+    {
+      "currencies":[
+        {
+          "id": 16,
+          "currentBalance": 0,
+          "delta": 0
+        },
+        {
+          "id": 17,
+          "currentBalance": 0,
+          "delta": 0
+        }
+      ],
+      "offset": 0,
+      "logic": ""
+    },
+  "inventory":
+    {
+      "items":[
+      ],
+      "offset":0,
+      "logic": ""
+    }
+}
