@@ -8,6 +8,7 @@
 
 #import "Inventory.h"
 #import "GameDataController.h"
+#import "JsonUtil.h"
 
 @implementation Inventory
 
@@ -19,6 +20,57 @@
     self = [super init];
     
     return self;
+}
+
+-(id)initWithDictionary:(NSDictionary*)data {
+    self = [super init];
+    
+    self.offset = [data[@"offset"] intValue];
+    self.logic = data[@"logic"];
+    
+    self.items = [NSMutableArray array];
+    if (data[@"items"] != nil) {
+        for (NSDictionary *dict in data[@"items"]) {
+            PlayerItem *playerItem = [[PlayerItem alloc] initWithDictionary:dict];
+            [self.items addObject:playerItem];
+        }
+    }
+    
+    return self;
+}
+
+-(NSDictionary*)toJSONObject {
+    NSMutableDictionary *rootDict = [NSMutableDictionary dictionary];
+    
+    [rootDict setObject:[NSNumber numberWithInt:self.offset] forKey:@"offset"];
+    
+    if (self.logic != nil) {
+        [rootDict setObject:self.logic forKey:@"logic"];
+    }
+    
+    NSMutableArray *itemArray = [NSMutableArray array];
+    if (self.items != nil) {
+        for (PlayerItem *item in self.items) {
+            [itemArray addObject:[item toJSONObject]];
+        }
+    }
+    [rootDict setObject:itemArray forKey:@"items"];
+    
+    return rootDict;
+}
+
+-(NSArray*)getItemsJSONArray {
+    NSMutableArray *itemArray = [NSMutableArray array];
+    if (self.items != nil) {
+        for (PlayerItem *item in self.items) {
+            [itemArray addObject:[item toJSONObject]];
+        }
+    }
+    return itemArray;
+}
+
+-(NSString*)toJSONString {
+    return [JsonUtil convertObjectToJson:[self toJSONObject]];
 }
 
 -(void)updateItem:(PlayerItem*)item {
@@ -59,15 +111,21 @@
         PlayerItem* item = (PlayerItem*)[items objectAtIndex:i];
         
         if(item.delta != 0) {
-            [result addObject:[item toDictionary]];
+            [result addObject:[item toJSONObject]];
         }
     }
     
     return result;
 }
 
-+(BOOL)propertyIsOptional:(NSString*)propertyName {
-    return YES;
+-(void)reset {
+    for(int i = 0; i < items.count; i++){
+        PlayerItem* item = (PlayerItem*)[items objectAtIndex:i];
+        if (item.amount != 0) {
+            item.delta -= (item.amount - item.initialValue);
+            item.amount = item.initialValue;
+        }
+    }
 }
 
 @end

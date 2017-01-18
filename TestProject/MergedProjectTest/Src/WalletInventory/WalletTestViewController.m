@@ -42,13 +42,13 @@
 
 - (IBAction)onPlusButtonPressed:(id)sender {
     int currencyId = [self.currencyTextField.text intValue];
-    [Spil addCurrencyToWallet:currencyId withAmount:100 withReason:@"add"];
+    [Spil addCurrencyToWallet:currencyId withAmount:100 withReason:@"add" withLocation:@"sampleapp"];
     [currencyTextField resignFirstResponder];
 }
 
 - (IBAction)onMinusButtonPressed:(id)sender {
     int currencyId = [self.currencyTextField.text intValue];
-    [Spil subtractCurrencyFromWallet:currencyId withAmount:100 withReason:@"subtract"];
+    [Spil subtractCurrencyFromWallet:currencyId withAmount:100 withReason:@"subtract" withLocation:@"sampleapp"];
     [currencyTextField resignFirstResponder];
 }
 
@@ -83,17 +83,17 @@
 
 - (IBAction)onAddItemButtonPressed:(id)sender {
     int itemId = [self.itemTextField.text intValue];
-    [Spil addItemToInventory:itemId withAmount:1 withReason:@"add"];
+    [Spil addItemToInventory:itemId withAmount:1 withReason:@"add" withLocation:@"sampleapp"];
 }
 
 - (IBAction)onRemoveItemButtonPressed:(id)sender {
     int itemId = [self.itemTextField.text intValue];
-    [Spil subtractItemFromInventory:itemId withAmount:1 withReason:@"add"];
+    [Spil subtractItemFromInventory:itemId withAmount:1 withReason:@"add" withLocation:@"sampleapp"];
 }
 
 - (IBAction)onAddBundleButtonPressed:(id)sender {
     int itemId = [self.bundleTextField.text intValue];
-    [Spil consumeBundle:itemId withReason:@"bought"];
+    [Spil buyBundle:itemId withReason:@"buy" withLocation:@"sampleapp"];
 }
 
 -(void)playerDataUpdated:(NSString*)reason updatedData:(NSString*)updatedData  {

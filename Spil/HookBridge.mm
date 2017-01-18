@@ -9,6 +9,9 @@
 #import "HookBridge.h"
 
 #import "SpilEventTracker.h"
+#if TARGET_OS_IOS
+#import "SpilNotificationHelper.h"
+#endif
 #import "SpilActionHandler.h"
 #import "Spil.h"
 #import "SpilUserHandler.h"
@@ -36,7 +39,6 @@
             UnitySendMessage([objectName cStringUsingEncoding:NSUTF8StringEncoding],
                              [messageName cStringUsingEncoding:NSUTF8StringEncoding],
                              [parameterString cStringUsingEncoding:NSUTF8StringEncoding]);
-            //NSLog(@"[HookBridge] UnitySendMessage, object: %@ method: %@ data: %@", objectName, messageName, parameterString);
         }
         @catch (NSException *exception) {
             NSLog(@"[HookBridge] UnitySendMessage, exception:%@",exception.reason);
@@ -109,6 +111,104 @@ void trackEventWithParamsNative(const char* eventName, const char* jsonStringPar
     [[SpilEventTracker sharedInstance] trackEvent:event withParameters:params];
 }
 
+// --- Default events (Not used by the unity plugin, it uses the generic track event methods ---
+
+void trackMilestoneAchievedEvent(const char* name) {
+    NSString *n = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackMilestoneAchievedEvent IN name: %@", n);
+    [Spil trackMilestoneAchievedEvent:n];
+}
+
+void trackLevelStartEvent(const char* level, int score, int stars, int turns, bool customCreated, const char* creatorId) {
+    NSString *l = [NSString stringWithCString:level encoding:NSUTF8StringEncoding];
+    NSString *ci = [NSString stringWithCString:creatorId encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackLevelStartEvent IN level: %@, score: %d, stars: %d, turns: %d, customCreated: %d, creatorId: %@", l, score, stars, turns, customCreated, ci);
+    [Spil trackLevelStartEvent:l score:score stars:stars turns:turns customCreated:customCreated creatorId:ci];
+}
+
+void trackLevelCompleteEvent(const char* level, int score, int stars, int turns, bool customCreated, const char* creatorId) {
+    NSString *l = [NSString stringWithCString:level encoding:NSUTF8StringEncoding];
+    NSString *ci = [NSString stringWithCString:creatorId encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackLevelCompleteEvent IN level: %@, score: %d, stars: %d, turns: %d, customCreated: %d, creatorId: %@", l, score, stars, turns, customCreated, ci);
+    [Spil trackLevelCompleteEvent:l score:score stars:stars turns:turns customCreated:customCreated creatorId:ci];
+}
+
+void trackLevelFailed(const char* level, int score, int stars, int turns, bool customCreated, const char* creatorId) {
+    NSString *l = [NSString stringWithCString:level encoding:NSUTF8StringEncoding];
+    NSString *ci = [NSString stringWithCString:creatorId encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackLevelFailed IN level: %@, score: %d, stars: %d, turns: %d, customCreated: %@, creatorId: %@", l, score, stars, turns, (customCreated ? @"YES" : @"NO"), ci);
+    [Spil trackLevelFailedEvent:l score:score stars:stars turns:turns customCreated:customCreated creatorId:ci];
+}
+
+void trackLevelUpEvent(const char* level, const char* objectId, const char* skillId) {
+    NSString *l = [NSString stringWithCString:level encoding:NSUTF8StringEncoding];
+    NSString *o = [NSString stringWithCString:objectId encoding:NSUTF8StringEncoding];
+    NSString *s = [NSString stringWithCString:skillId encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackLevelUpEvent IN level: %@, objectId: %@, skillId: %@", l, o, s);
+    [Spil trackLevelUpEvent:l objectId:o skillId:s];
+}
+
+void trackEquipEvent(const char* equippedItem, const char* equippedTo) {
+    NSString *i = [NSString stringWithCString:equippedItem encoding:NSUTF8StringEncoding];
+    NSString *t = [NSString stringWithCString:equippedTo encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackEquipEvent IN equippedItem: %@, equippedTo: %@", i, t);
+    [Spil trackEquipEvent:i equippedTo:t];
+}
+
+void trackUpgradeEvent(const char* upgradeId, const char* level, const char* reason, int iteration) {
+    NSString *u = [NSString stringWithCString:upgradeId encoding:NSUTF8StringEncoding];
+    NSString *l = [NSString stringWithCString:level encoding:NSUTF8StringEncoding];
+    NSString *r = [NSString stringWithCString:reason encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackUpgradeEvent IN upgradeId: %@, level: %@, reason: %@, iteration: %d", u, l, r, iteration);
+    [Spil trackUpgradeEvent:u level:l reason:r iteration:iteration];
+}
+
+void trackLevelCreateEvent(const char* levelId, const char* creatorId) {
+    NSString *l = [NSString stringWithCString:levelId encoding:NSUTF8StringEncoding];
+    NSString *c = [NSString stringWithCString:creatorId encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackLevelCreateEvent IN levelId: %@, creatorId: %@", l, c);
+    [Spil trackLevelCreateEvent:l creatorId:c];
+}
+
+void trackLevelDownloadEvent(const char* levelId, const char* creatorId, int rating) {
+    NSString *l = [NSString stringWithCString:levelId encoding:NSUTF8StringEncoding];
+    NSString *c = [NSString stringWithCString:creatorId encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackLevelDownloadEvent IN levelId: %@, creatorId: %@, rating: %d", l, c, rating);
+    [Spil trackLevelDownloadEvent:l creatorId:c rating:rating];
+}
+
+void trackLevelRateEvent(const char* levelId, const char* creatorId, int rating) {
+    NSString *l = [NSString stringWithCString:levelId encoding:NSUTF8StringEncoding];
+    NSString *c = [NSString stringWithCString:creatorId encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackLevelRateEvent IN levelId: %@, creatorId: %@, rating: %d", l, c, rating);
+    [Spil trackLevelRateEvent:l creatorId:c rating:rating];
+}
+
+void trackEndlessModeStartEvent() {
+    NSLog(@"[HookBridge] trackEndlessModeStartEvent");
+    [Spil trackEndlessModeStartEvent];
+}
+
+void trackEndlessModeEndEvent(int distance) {
+    NSLog(@"[HookBridge] trackEndlessModeEndEvent IN distance: %d", distance);
+    [Spil trackEndlessModeEndEvent:distance];
+}
+
+void trackPlayerDiesEvent(const char* level) {
+    NSString *l = [NSString stringWithCString:level encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackPlayerDiesEvent IN level: %@", l);
+    [Spil trackPlayerDiesEvent:l];
+}
+
+void trackWalletInventoryEvent(const char* currencyList, const char* itemsList, const char* reason, const char* location) {
+    NSString *currency = [NSString stringWithCString:currencyList encoding:NSUTF8StringEncoding];
+    NSString *items = [NSString stringWithCString:itemsList encoding:NSUTF8StringEncoding];
+    NSString *r = [NSString stringWithCString:reason encoding:NSUTF8StringEncoding];
+    NSString *l = [NSString stringWithCString:location encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] trackWalletInventoryEvent IN itemsList: %@, itemsList: %@, reason: %@, location: %@", currency, items, r, l);
+    [Spil trackWalletInventoryEvent:r location:l currencyList:currency itemList:items];
+}
+
 void trackIAPPurchasedEvent(const char* skuId, const char* transactionId, const char* purchaseDate) {
     NSString *sku = [NSString stringWithCString:skuId encoding:NSUTF8StringEncoding];
     NSString *transaction = [NSString stringWithCString:transactionId encoding:NSUTF8StringEncoding];
@@ -130,44 +230,6 @@ void trackIAPFailedEvent(const char* skuId, const char* error) {
     NSString *e = [NSString stringWithCString:error encoding:NSUTF8StringEncoding];
     NSLog(@"[HookBridge] trackIAPFailedEvent IN skuId: %@, error: %@", sku, e);
     [Spil trackIAPFailedEvent:sku error:e];
-}
-
-void trackWalletInventoryEvent(const char* currencyList, const char* itemsList, const char* reason, const char* location) {
-    NSString *currency = [NSString stringWithCString:currencyList encoding:NSUTF8StringEncoding];
-    NSString *items = [NSString stringWithCString:itemsList encoding:NSUTF8StringEncoding];
-    NSString *r = [NSString stringWithCString:reason encoding:NSUTF8StringEncoding];
-    NSString *l = [NSString stringWithCString:location encoding:NSUTF8StringEncoding];
-    NSLog(@"[HookBridge] trackWalletInventoryEvent IN itemsList: %@, itemsList: %@, reason: %@, location: %@", currency, items, r, l);
-    [Spil trackWalletInventoryEvent:currency itemsList:items reason:r location:l];
-}
-
-void trackMilestoneEvent(const char* name) {
-    NSString *n = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
-    NSLog(@"[HookBridge] trackMilestoneEvent IN name: %@", n);
-    [Spil trackMilestoneEvent:n];
-}
-
-void trackLevelStartEvent(const char* level) {
-    NSString *l = [NSString stringWithCString:level encoding:NSUTF8StringEncoding];
-    NSLog(@"[HookBridge] trackLevelStartEvent IN level: %@", l);
-    [Spil trackLevelStartEvent:l];
-}
-
-void trackLevelCompleteEvent(const char* level, const char* score, const char* stars, const char* turns) {
-    NSString *l = [NSString stringWithCString:level encoding:NSUTF8StringEncoding];
-    NSString *s = [NSString stringWithCString:score encoding:NSUTF8StringEncoding];
-    NSString *st = [NSString stringWithCString:stars encoding:NSUTF8StringEncoding];
-    NSString *t = [NSString stringWithCString:turns encoding:NSUTF8StringEncoding];
-    NSLog(@"[HookBridge] trackLevelCompleteEvent IN level: %@, score: %@, stars: %@, turns: %@", l, s, st, t);
-    [Spil trackLevelCompleteEvent:l score:s stars:st turns:t];
-}
-
-void trackLevelFailed(const char* level, const char* score, const char* turns) {
-    NSString *l = [NSString stringWithCString:level encoding:NSUTF8StringEncoding];
-    NSString *s = [NSString stringWithCString:score encoding:NSUTF8StringEncoding];
-    NSString *t = [NSString stringWithCString:turns encoding:NSUTF8StringEncoding];
-    NSLog(@"[HookBridge] trackLevelFailed IN level: %@, score: %@, turns: %@", l, s, t);
-    [Spil trackLevelFailed:l score:s turns:t];
 }
 
 void trackTutorialCompleteEvent() {
@@ -201,7 +263,13 @@ void trackInviteEvent(const char* platform) {
 // --- App flow ---
 
 void applicationDidFinishLaunchingWithOptions(const char* launchOptions) {
-
+    NSString *launchOptionsString = [NSString stringWithCString:launchOptions encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] applicationDidFinishLaunchingWithOptions: %@", launchOptionsString);
+    
+    NSData *data = [launchOptionsString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *params = (NSDictionary*)[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    
+    [Spil application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:params];
 }
 
 void applicationDidEnterBackground() {
@@ -219,11 +287,16 @@ void applicationDidBecomeActive() {
 // --- Push Notifications ---
 
 void disableAutomaticRegisterForPushNotificationsNative() {
-
+    NSLog(@"[HookBridge] registerForPushNotificationsNative");
+    
+    [Spil disableAutomaticRegisterForPushNotifications];
 }
 
 void registerForPushNotifications() {
     NSLog(@"[HookBridge] registerForPushNotifications");
+    #if TARGET_OS_IOS
+    [SpilNotificationHelper registerPushNotifications];
+    #endif
 }
 
 void setPushNotificationKey(const char* pushKey){
@@ -370,6 +443,12 @@ void showMoreAppsNative () {
     [Spil showMoreApps];
 }
 
+void requestRewardVideoNative(const char* rewardType) {
+    NSString *r = [NSString stringWithCString:rewardType encoding:NSUTF8StringEncoding];
+    NSLog(@"[HookBridge] requestRewardVideoNative IN name: %@", r);
+    [Spil requestRewardVideo:r];
+}
+
 void playRewardVideoNative () {
     NSLog(@"[HookBridge] playRewardVideoNative");
     
@@ -419,16 +498,6 @@ void closedParentalGateNative(const bool pass) {
 
 // -- Game & Player data ---
 
-// TODO: will be exposed later when the user profile is actually fully implemented
-/*char* getUserProfileNative () {
-    if([[SpilEventTracker sharedInstance] getDebug]) {
-        NSLog(@"[HookBridge] getUserProfileNative");
-    }
-    
-    NSString *jsonString = [Spil getUserProfile];
-    return cStringCopy([jsonString UTF8String]);
-}*/
-
 void updatePlayerDataNative () {
     if([[SpilEventTracker sharedInstance] getAdvancedLoggingEnabled]) {
         NSLog(@"[HookBridge] updatePlayerData");
@@ -464,63 +533,92 @@ char* getInventoryNative () {
     return cStringCopy([jsonString UTF8String]);
 }
 
-void addCurrencyToWalletNative(int currencyId, int amount, char* reasonName) {
+void addCurrencyToWalletNative(int currencyId, int amount, char* reasonName, char* locationName) {
     if([[SpilEventTracker sharedInstance] getAdvancedLoggingEnabled]) {
         NSLog(@"[HookBridge] addCurrencyToWallet");
     }
     
     NSString *reason = [NSString stringWithCString:reasonName encoding:NSUTF8StringEncoding];
-    [Spil addCurrencyToWallet:currencyId withAmount:amount withReason:reason];
+    NSString *location = [NSString stringWithCString:locationName encoding:NSUTF8StringEncoding];
+    [Spil addCurrencyToWallet:currencyId withAmount:amount withReason:reason withLocation:location];
 }
 
-void subtractCurrencyFromWalletNative(int currencyId, int amount, char* reasonName) {
+void subtractCurrencyFromWalletNative(int currencyId, int amount, char* reasonName, char* locationName) {
     if([[SpilEventTracker sharedInstance] getAdvancedLoggingEnabled]) {
         NSLog(@"[HookBridge] subtractCurrencyFromWallet");
     }
     
     NSString *reason = [NSString stringWithCString:reasonName encoding:NSUTF8StringEncoding];
-    [Spil subtractCurrencyFromWallet:currencyId withAmount:amount withReason:reason];
+    NSString *location = [NSString stringWithCString:locationName encoding:NSUTF8StringEncoding];
+    [Spil subtractCurrencyFromWallet:currencyId withAmount:amount withReason:reason withLocation:location];
 }
 
-void addItemToInventoryNative(int itemId, int amount, char* reasonName) {
+void addItemToInventoryNative(int itemId, int amount, char* reasonName, char* locationName) {
     if([[SpilEventTracker sharedInstance] getAdvancedLoggingEnabled]) {
         NSLog(@"[HookBridge] addItemToInventory");
     }
     
     NSString *reason = [NSString stringWithCString:reasonName encoding:NSUTF8StringEncoding];
-    [Spil addItemToInventory:itemId withAmount:amount withReason:reason];
+    NSString *location = [NSString stringWithCString:locationName encoding:NSUTF8StringEncoding];
+    [Spil addItemToInventory:itemId withAmount:amount withReason:reason withLocation:location];
 }
 
-void subtractItemFromInventoryNative(int itemId, int amount, char* reasonName) {
+void subtractItemFromInventoryNative(int itemId, int amount, char* reasonName, char* locationName) {
     if([[SpilEventTracker sharedInstance] getAdvancedLoggingEnabled]) {
         NSLog(@"[HookBridge] subtractItemToInventory");
     }
     
     NSString *reason = [NSString stringWithCString:reasonName encoding:NSUTF8StringEncoding];
-    [Spil subtractItemFromInventory:itemId withAmount:amount withReason:reason];
+    NSString *location = [NSString stringWithCString:locationName encoding:NSUTF8StringEncoding];
+    [Spil subtractItemFromInventory:itemId withAmount:amount withReason:reason withLocation:location];
 }
 
-void consumeBundleNative(int itemId, char* reasonName) {
+void buyBundleNative(int itemId, char* reasonName, char* locationName) {
     if([[SpilEventTracker sharedInstance] getAdvancedLoggingEnabled]) {
-        NSLog(@"[HookBridge] consumeBundle");
+        NSLog(@"[HookBridge] buyBundleNative");
     }
     
     NSString *reason = [NSString stringWithCString:reasonName encoding:NSUTF8StringEncoding];
-    [Spil consumeBundle:itemId withReason:reason];
+    NSString *location = [NSString stringWithCString:locationName encoding:NSUTF8StringEncoding];
+    [Spil buyBundle:itemId withReason:reason withLocation:location];
+}
+
+void resetPlayerDataNative () {
+    [Spil resetPlayerData];
+}
+
+void resetInventoryNative () {
+    [Spil resetInventory];
+}
+
+void resetWalletNative () {
+    [Spil resetWallet];
 }
 
 // --- Customer support ---
 
 void showHelpCenterNative() {
-
+    if([[SpilEventTracker sharedInstance] getAdvancedLoggingEnabled]) {
+        NSLog(@"[HookBridge] showHelpCenterNative");
+    }
+    
+    [Spil showHelpCenter];
 }
 
 void showContactCenterNative() {
-
+    if([[SpilEventTracker sharedInstance] getAdvancedLoggingEnabled]) {
+        NSLog(@"[HookBridge] showContactCenterNative");
+    }
+    
+    [Spil showContactCenter];
 }
 
 void showHelpCenterWebviewNative() {
-
+    if([[SpilEventTracker sharedInstance] getAdvancedLoggingEnabled]) {
+        NSLog(@"[HookBridge] showHelpCenterWebviewNative");
+    }
+    
+    [Spil showHelpCenterWebview];
 }
 
 // --- Web ---
@@ -610,7 +708,7 @@ char* getPublicGameStateNative() {
 void getOtherUsersGameStateNative(const char* provider, const char* userIdsJsonArray) {
     NSString *providerString = [NSString stringWithCString:provider encoding:NSUTF8StringEncoding];
     NSString *uidsString = [NSString stringWithCString:userIdsJsonArray encoding:NSUTF8StringEncoding];
-    NSLog(@"[HookBridge] setPublicGameStateNative IN userIdsJsonArray: %@", uidsString);
+    NSLog(@"[HookBridge] getOtherUsersGameStateNative IN userIdsJsonArray: %@", uidsString);
     
     NSArray *userIds = [JsonUtil convertStringToObject:uidsString];
     [Spil getOtherUsersGameState:providerString userIds:userIds];

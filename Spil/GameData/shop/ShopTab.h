@@ -7,18 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "JSONModel.h"
 #import "ShopEntry.h"
 
-@protocol ShopTab
-@end
-
-@interface ShopTab : JSONModel
+@interface ShopTab : NSObject
 
 @property (nonatomic, assign) int position;
 @property (nonatomic, strong) NSString* name;
-@property (nonatomic, strong) NSMutableArray<ShopEntry> *entries;
+@property (nonatomic, strong) NSMutableArray *entries; // ShopEntry
 
--(id)init;
+-(id)initWithDictionary:(NSDictionary*)data;
+
+-(NSDictionary*)toJSONObject;
 
 @end

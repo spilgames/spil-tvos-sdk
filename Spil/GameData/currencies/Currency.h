@@ -7,17 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "JSONModel.h"
 
-@protocol Currency
-@end
-
-@interface Currency : JSONModel
+@interface Currency : NSObject
 
 @property (assign, nonatomic) int id;
 @property (strong, nonatomic) NSString *name;
 @property (assign, nonatomic) int type;
+@property (assign, nonatomic) int initialValue;
 
--(id)init;
+-(id)initWithDictionary:(NSDictionary*)dict;
+
+-(NSMutableDictionary*)toJSONObject;
 
 @end

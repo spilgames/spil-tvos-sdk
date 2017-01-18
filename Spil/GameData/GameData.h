@@ -7,25 +7,25 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "JSONModel.h"
 #import "Item.h"
 #import "Currency.h"
 #import "Bundle.h"
-#import "ShopEntry.h"
 #import "ShopTab.h"
 #import "ShopPromotion.h"
 
-@protocol GameData
-@end
+@interface GameData : NSObject
 
-@interface GameData : JSONModel
+@property (strong, nonatomic) NSMutableArray *items; // Item
+@property (strong, nonatomic) NSMutableArray *currencies; // Currency
+@property (strong, nonatomic) NSMutableArray *bundles; // Bundle
+@property (strong, nonatomic) NSMutableArray *shop; // ShopTab
+@property (strong, nonatomic) NSMutableArray *promotions; // ShopPromotion
 
-@property (strong, nonatomic) NSMutableArray<Item> *items;
-@property (strong, nonatomic) NSMutableArray<Currency> *currencies;
-@property (strong, nonatomic) NSMutableArray<Bundle> *bundles;
-@property (strong, nonatomic) NSMutableArray<ShopTab> *shop;
-@property (strong, nonatomic) NSMutableArray<ShopPromotion> *promotions;
+-(id)initWithDictionary:(NSDictionary*)data;
 
--(id)init;
+-(NSString*)toJSONString;
+
+-(NSString*)getShopJSONString;
+-(NSString*)getPromotionsJSONString;
 
 @end

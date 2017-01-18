@@ -8,20 +8,18 @@
 
 #import <Foundation/Foundation.h>
 #import "BundlePrice.h"
-#import "JSONModel.h"
 
-@protocol ShopPromotion
-@end
-
-@interface ShopPromotion : JSONModel
+@interface ShopPromotion : NSObject
 
 @property (nonatomic, assign) int bundleId;
 @property (nonatomic, assign) int amount;
-@property (nonatomic, strong) NSMutableArray<BundlePrice> *prices;
+@property (nonatomic, strong) NSMutableArray *prices; // BundlePrice
 @property (nonatomic, strong) NSString* discount;
 @property (nonatomic, strong) NSString* startDate;
 @property (nonatomic, strong) NSString* endDate;
 
--(id)init;
+-(id)initWithDictionary:(NSDictionary*)data;
+
+-(NSDictionary*)toJSONObject;
 
 @end

@@ -24,14 +24,29 @@
     self = [super init];
     
     [ClassUtil copyParent:item intoChild:self];
-    self.amount = 0;
-    self.delta = 0;
+    self.amount = item.initialValue;
+    self.delta = item.initialValue;
+    self.initialValue = item.initialValue;
     
     return self;
 }
 
-+(BOOL)propertyIsOptional:(NSString*)propertyName {
-    return YES;
+-(id)initWithDictionary:(NSDictionary*)dict {
+    self = [super initWithDictionary:dict];
+    
+    self.amount = [dict[@"amount"] intValue];
+    self.delta = [dict[@"delta"] intValue];
+    
+    return self;
+}
+
+-(NSDictionary*)toJSONObject {
+    NSMutableDictionary *rootDict = [super toJSONObject];
+    
+    [rootDict setObject:[NSNumber numberWithInt:self.amount] forKey:@"amount"];
+    [rootDict setObject:[NSNumber numberWithInt:self.delta] forKey:@"delta"];
+    
+    return rootDict;
 }
 
 @end

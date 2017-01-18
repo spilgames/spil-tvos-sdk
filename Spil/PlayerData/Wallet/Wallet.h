@@ -8,24 +8,28 @@
 
 #import <Foundation/Foundation.h>
 #import "PlayerCurrency.h"
-#import "JSONModel.h"
 #import "Bundle.h"
 
-@protocol Wallet
-@end
+@interface Wallet : NSObject
 
-@interface Wallet : JSONModel
-
-@property (strong, nonatomic) NSMutableArray <PlayerCurrency> *currencies;
+@property (strong, nonatomic) NSMutableArray *currencies; // PlayerCurrency
 @property (nonatomic) int offset;
 @property (strong, nonatomic) NSString* logic;
 
 -(id)init;
+-(id)initWithDictionary:(NSDictionary*)data;
+
+-(NSDictionary*)toJSONObject;
+-(NSString*)toJSONString;
+
+-(NSArray*)getCurrenciesJSONArray;
 
 -(PlayerCurrency*)getCurrency:(int)id;
 
 -(NSArray*)getUpdatedCurrencies;
 
 -(BOOL)hasEnoughCurrencyForBundle:(Bundle*)bundle;
+
+-(void)reset;
 
 @end

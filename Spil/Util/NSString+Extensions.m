@@ -10,7 +10,7 @@
 
 @implementation NSString (Extensions)
 
-//#pragma GCC diagnostic ignored "-Wundeclared-selector"
+#pragma GCC diagnostic ignored "-Wundeclared-selector"
 - (NSString *)urlencode {
     NSMutableString *output = [NSMutableString string];
     const unsigned char *source = (const unsigned char *)[self UTF8String];

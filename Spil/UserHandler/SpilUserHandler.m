@@ -173,8 +173,10 @@ static SpilUserHandler* sharedInstance;
 
 -(void)setPublicGameState:(NSString*)publicData {
     if ([self getExternalUserRequestData] == nil) {
-        NSDictionary *userInfo = @{@"event" : @"gameStateError", @"message" : [[SpilError PublicGameStateOperationFailed:@"User id not set!"] toJson]};
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"spilNotificationHandler" object:nil userInfo:userInfo];
+        if (![publicData isEqualToString:@""]) {
+            NSDictionary *userInfo = @{@"event" : @"gameStateError", @"message" : [[SpilError PublicGameStateOperationFailed:@"User id not set!"] toJson]};
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"spilNotificationHandler" object:nil userInfo:userInfo];
+        }
         return;
     }
     

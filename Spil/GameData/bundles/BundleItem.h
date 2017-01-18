@@ -7,16 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "JSONModel.h"
 
-@protocol BundleItem
-@end
-
-@interface BundleItem : JSONModel
+@interface BundleItem : NSObject
 
 @property (assign, nonatomic) int id;
 @property (assign, nonatomic) int amount;
 
--(id)init;
+-(id)initWithDictionary:(NSDictionary*)dict;
+
+-(NSDictionary*)toJSONObject;
 
 @end

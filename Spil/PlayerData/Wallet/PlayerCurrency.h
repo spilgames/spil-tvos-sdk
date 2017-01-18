@@ -9,17 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "Currency.h"
 
-@protocol PlayerCurrency
-
-@end
-
 @interface PlayerCurrency : Currency
 
 @property (nonatomic) int currentBalance;
 @property (nonatomic) int delta;
 
 -(id)init;
-
 -(id)initWithCurrency:(Currency*)currency;
+-(id)initWithDictionary:(NSDictionary*)dict;
+
+-(NSDictionary*)toJSONObject;
 
 @end

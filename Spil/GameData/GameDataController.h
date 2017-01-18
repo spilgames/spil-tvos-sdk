@@ -20,7 +20,6 @@
 
 -(void)requestGameData;
 -(void)processGameData:(NSDictionary*)data;
--(void)processGameData:(NSArray*)currencies withItems:(NSArray*)items withBundles:(NSArray*)bundles withShopTabs:(NSArray*)shopTabs withShopPromotions:(NSArray*)shopPromotions;
 -(GameData*)getGameData;
 
 -(Item*)getItem:(int)itemId;

@@ -19,5 +19,8 @@
 
 -(id)init;
 -(id)initWithItem:(Item*)item;
+-(id)initWithDictionary:(NSDictionary*)dict;
+
+-(NSDictionary*)toJSONObject;
 
 @end

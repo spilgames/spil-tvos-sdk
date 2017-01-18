@@ -9,12 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "Wallet.h"
 #import "Inventory.h"
-#import "JSONModel.h"
 
-@protocol UserProfile
-@end
-
-@interface UserProfile : JSONModel
+@interface UserProfile : NSObject
 
 @property (strong, nonatomic) NSString *userID;
 @property (strong, nonatomic) NSString *facebookID;
@@ -27,6 +23,9 @@
 @property (strong, nonatomic) Wallet *wallet;
 @property (strong, nonatomic) Inventory *inventory;
 
--(id)init;
+-(id)initWithDictionary:(NSDictionary*)dict;
+
+-(NSDictionary*)toJSONObject;
+-(NSString*)toJSONString;
 
 @end

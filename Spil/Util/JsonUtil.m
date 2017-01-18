@@ -42,4 +42,27 @@
     }
 }
 
++(NSString*)convertObjectToReadableJson:(id) object {
+    if (object == nil) {
+        return nil;
+    }
+    
+    if ([object isKindOfClass:[NSNumber class]]) {
+        return [object stringValue];
+    }
+    
+    @try {
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object options:NSJSONWritingPrettyPrinted error:&error];
+        if (jsonData) {
+            return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        } else {
+            return nil;
+        }
+    } @catch (NSException *exception) {
+        NSLog(@"JsonUtil EXCEPTION: %@", exception.description);
+        return nil;
+    }
+}
+
 @end

@@ -8,23 +8,27 @@
 
 #import <Foundation/Foundation.h>
 #import "PlayerItem.h"
-#import "JSONModel.h"
 
-@protocol Inventory
-@end
+@interface Inventory : NSObject
 
-@interface Inventory : JSONModel
-
-@property (strong, nonatomic) NSMutableArray<PlayerItem> *items;
+@property (strong, nonatomic) NSMutableArray *items; // PlayerItem
 @property (nonatomic) int offset;
 @property (strong, nonatomic) NSString* logic;
 
 -(id)init;
+-(id)initWithDictionary:(NSDictionary*)data;
+
+-(NSDictionary*)toJSONObject;
+-(NSString*)toJSONString;
+
+-(NSArray*)getItemsJSONArray;
 
 -(void)updateItem:(PlayerItem*)item;
 
 -(NSArray*)getUpdatedItems;
 
 -(PlayerItem*)getItem:(int)id;
+
+-(void)reset;
 
 @end

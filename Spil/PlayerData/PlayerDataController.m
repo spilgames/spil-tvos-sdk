@@ -18,6 +18,7 @@
 #import "BundleItem.h"
 #import "GameData.h"
 #import "SpilError.h"
+#import "JsonUtil.h"
 
 @implementation PlayerDataController
 
@@ -53,7 +54,7 @@ static PlayerDataController* sharedInstance;
 }
 
 -(void)updatePlayerData {
-    [self sendUpdatePlayerDataEvent:[self getUserProfile] withBundle:nil withReason:@"update"];
+    [self sendUpdatePlayerDataEvent:[self getUserProfile] withBundle:nil withReason:@"update" withLocation:@""];
 }
 
 //Exposed to SDK
@@ -144,9 +145,9 @@ static PlayerDataController* sharedInstance;
         if(previousWalletOffset < updatedWallet.offset || previousInventoryOffset < updatedInventory.offset) {
             // Send update notification
             NSMutableDictionary *updatedData = [NSMutableDictionary dictionary];
-            NSArray* itemObjects = [PlayerItem arrayOfDictionariesFromModels:updatedInventory.items];
+            NSArray* itemObjects = [updatedInventory getItemsJSONArray];
             [updatedData setObject:itemObjects forKey:@"items"];
-            NSArray* currencyObjects = [PlayerCurrency arrayOfDictionariesFromModels:updatedWallet.currencies];
+            NSArray* currencyObjects = [updatedWallet getCurrenciesJSONArray];
             [updatedData setObject:currencyObjects forKey:@"currencies"];
             NSDictionary *userInfo = @{@"event" : @"playerDataUpdated", @"reason" : @"Server Update", @"updatedData" : updatedData};
             [[NSNotificationCenter defaultCenter] postNotificationName:@"spilNotificationHandler" object:nil userInfo:userInfo];
@@ -166,17 +167,21 @@ static PlayerDataController* sharedInstance;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *userProfileString = [defaults objectForKey:@"spilUserProfile"];
     
-    NSError *error = nil;
+    bool newInstall = false;
     UserProfile *userProfile = nil;
     if(userProfileString != nil) {
-        userProfile = [[UserProfile alloc] initWithString:userProfileString error:&error];
+        NSDictionary *jsonData = [JsonUtil convertStringToObject:userProfileString];
+        userProfile = [[UserProfile alloc] initWithDictionary:jsonData];
     } else {
         userProfileString = [self loadPlayerDataFromAssets];
         
         if(userProfileString != nil){
             [defaults setObject:userProfileString forKey:@"spilUserProfile"];
             [defaults synchronize];
-            userProfile = [[UserProfile alloc] initWithString:userProfileString error:&error];
+            
+            newInstall = true;
+            NSDictionary *jsonData = [JsonUtil convertStringToObject:userProfileString];
+            userProfile = [[UserProfile alloc] initWithDictionary:jsonData];
         } else {
             // Send a notification when the data failed to load
             NSDictionary *userInfo = @{@"event" : @"playerDataError", @"message" : [[SpilError LoadFailed:@"User Profile is empty!"] toJson]};
@@ -188,13 +193,14 @@ static PlayerDataController* sharedInstance;
     if (userProfile != nil) {
         // Check for missing arrays
         if (userProfile.wallet.currencies == nil) {
-            userProfile.wallet.currencies = [NSMutableArray<PlayerCurrency> array];
+            userProfile.wallet.currencies = [NSMutableArray array]; // PlayerCurrency
         }
         if (userProfile.inventory.items == nil) {
-            userProfile.inventory.items = [NSMutableArray<PlayerItem> array];
+            userProfile.inventory.items = [NSMutableArray array]; // PlayerItem
         }
         
         // Add missing gamedata currencies
+        bool sendUpdateAfterProcessing = false;
         NSArray *currencies = [[GameDataController sharedInstance] getGameData].currencies;
         if (currencies != nil) {
             for (Currency *currency in currencies) {
@@ -207,8 +213,15 @@ static PlayerDataController* sharedInstance;
                 }
                 if (foundCurrency != nil) {
                     foundCurrency.name = currency.name;
+                    foundCurrency.initialValue = currency.initialValue;
+                    if (newInstall == true) {
+                        foundCurrency.delta = currency.initialValue;
+                        foundCurrency.currentBalance = currency.initialValue;
+                        sendUpdateAfterProcessing = true;
+                    }
                 } else {
                     [userProfile.wallet.currencies addObject:[[PlayerCurrency alloc] initWithCurrency:currency]];
+                    sendUpdateAfterProcessing = true;
                 }
             }
         }
@@ -226,10 +239,21 @@ static PlayerDataController* sharedInstance;
                 }
                 if (foundItem != nil) {
                     foundItem.name = item.name;
+                    foundItem.initialValue = item.initialValue;
+                    if (newInstall == true) {
+                        foundItem.delta = item.initialValue;
+                        foundItem.amount = item.initialValue;
+                        sendUpdateAfterProcessing = true;
+                    }
                 } else {
                     [userProfile.inventory.items addObject:[[PlayerItem alloc] initWithItem:item]];
+                    sendUpdateAfterProcessing = true;
                 }
             }
+        }
+        
+        if (sendUpdateAfterProcessing) {
+            [self sendUpdatePlayerDataEvent:userProfile withBundle:nil withReason:@"initialValue" withLocation:@"sdk"];
         }
     }
     
@@ -288,7 +312,7 @@ static PlayerDataController* sharedInstance;
 }
 
 //Exposed to SDK - Case 1 (see Gist https://gist.github.com/sebastian24/392bd6a37d6c09c4bec9a13cb0e1bf3a )
--(void)updateWallet:(int)currencyId withDelta:(int)delta withReason:(NSString*)reason {
+-(void)updateWallet:(int)currencyId withDelta:(int)delta withReason:(NSString*)reason withLocation:(NSString*)location {
     // Check for existing profile
     UserProfile *userProfile = [self getUserProfile];
     if(userProfile == nil){
@@ -320,7 +344,7 @@ static PlayerDataController* sharedInstance;
             currency.currentBalance += delta;
             
             // Send the data
-            [self sendUpdatePlayerDataEvent:userProfile withBundle: nil withReason:reason];
+            [self sendUpdatePlayerDataEvent:userProfile withBundle: nil withReason:reason withLocation:location];
             
             currency.delta = 0;
             
@@ -332,13 +356,13 @@ static PlayerDataController* sharedInstance;
             [clientWalletUpdateAllowedTimer invalidate];
             clientWalletUpdateAllowedTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 target:self selector:@selector(clientWalletUpdateAllowedTimerFinished:) userInfo:nil repeats:NO];
         } else if (![latestWalletReason isEqualToString:reason]) {
-            [self sendUpdatePlayerDataEvent:userProfile withBundle: nil withReason:latestWalletReason];
+            [self sendUpdatePlayerDataEvent:userProfile withBundle: nil withReason:latestWalletReason withLocation:location];
             
             // Adjust the values
             currency.delta = delta;
             currency.currentBalance += delta;
             
-            [self sendUpdatePlayerDataEvent:userProfile withBundle: nil withReason:reason];
+            [self sendUpdatePlayerDataEvent:userProfile withBundle: nil withReason:reason withLocation:location];
             currency.delta = 0;
             
             // Save to shared prefs
@@ -363,7 +387,7 @@ static PlayerDataController* sharedInstance;
         NSMutableDictionary *updatedData = [NSMutableDictionary dictionary];
         [updatedData setObject:@[] forKey:@"items"];
         
-        NSMutableDictionary *dict = [[currency toDictionary] mutableCopy];
+        NSMutableDictionary *dict = [[currency toJSONObject] mutableCopy];
         [dict setObject:[NSNumber numberWithInt:delta] forKey:@"delta"];
         
         [updatedData setObject:@[dict] forKey:@"currencies"];
@@ -375,7 +399,7 @@ static PlayerDataController* sharedInstance;
         currency.currentBalance += delta;
         
         // Send the changes to the server
-        [self sendUpdatePlayerDataEvent:userProfile withBundle:nil withReason:reason];
+        [self sendUpdatePlayerDataEvent:userProfile withBundle:nil withReason:reason withLocation:location];
         
         // Revert the changed values because it should be validated by the server first before setting it on the client side
         currency.delta -= delta;
@@ -384,7 +408,7 @@ static PlayerDataController* sharedInstance;
 }
 
 //Exposed to SDK - Case 2 (see Gist https://gist.github.com/sebastian24/392bd6a37d6c09c4bec9a13cb0e1bf3a )
--(void)updateInventoryWithItem:(int)itemId withAmount:(int)amount withAction:(NSString*)action withReason:(NSString*)reason {
+-(void)updateInventoryWithItem:(int)itemId withAmount:(int)amount withAction:(NSString*)action withReason:(NSString*)reason withLocation:(NSString*)location {
     // Check user profile
     UserProfile *userProfile = [self getUserProfile];
     if(userProfile == nil){
@@ -421,7 +445,7 @@ static PlayerDataController* sharedInstance;
         item.amount += delta;
         
         // Send the data
-        [self sendUpdatePlayerDataEvent:userProfile withBundle:nil withReason:reason];
+        [self sendUpdatePlayerDataEvent:userProfile withBundle:nil withReason:reason withLocation:location];
         item.delta = 0;
         
         // Save to shared prefs
@@ -430,7 +454,7 @@ static PlayerDataController* sharedInstance;
         // Send notification
         NSMutableDictionary *updatedData = [NSMutableDictionary dictionary];
         
-        NSMutableDictionary *dict = [[item toDictionary] mutableCopy];
+        NSMutableDictionary *dict = [[item toJSONObject] mutableCopy];
         [dict setObject:[NSNumber numberWithInt:delta] forKey:@"delta"];
         
         [updatedData setObject:@[dict] forKey:@"items"];
@@ -443,7 +467,7 @@ static PlayerDataController* sharedInstance;
         item.amount += delta;
         
         // Send the changes to the server
-        [self sendUpdatePlayerDataEvent:userProfile withBundle:nil withReason:reason];
+        [self sendUpdatePlayerDataEvent:userProfile withBundle:nil withReason:reason withLocation:location];
         
         // Revert the changed values because it should be validated by the server first before setting it on the client side
         item.delta -= delta;
@@ -452,7 +476,7 @@ static PlayerDataController* sharedInstance;
 }
 
 //Exposed to SDK - Case 3 (see Gist https://gist.github.com/sebastian24/392bd6a37d6c09c4bec9a13cb0e1bf3a )
--(void)updateInventoryWithBundle:(int)bundleId withReason:(NSString*)reason {
+-(void)updateInventoryWithBundle:(int)bundleId withReason:(NSString*)reason withLocation:(NSString*)location {
     // Check user profile
     UserProfile *userProfile = [self getUserProfile];
     if(userProfile == nil){
@@ -520,7 +544,7 @@ static PlayerDataController* sharedInstance;
     }
     
     // Send the updated profile to the backend
-    [self sendUpdatePlayerDataEvent:userProfile withBundle: bundle withReason:reason];
+    [self sendUpdatePlayerDataEvent:userProfile withBundle: bundle withReason:reason withLocation:location];
     
     // Reset the deltas
     for (BundlePrice *bundlePrice in bundle.prices) {
@@ -545,9 +569,9 @@ static PlayerDataController* sharedInstance;
     
     // Send notification
     NSMutableDictionary *updatedData = [NSMutableDictionary dictionary];
-    NSArray* itemObjects = [PlayerItem arrayOfDictionariesFromModels:bundle.items];
+    NSArray* itemObjects = [bundle getItemsJSONArray];
     [updatedData setObject:itemObjects forKey:@"items"];
-    NSArray* currencyObjects = [PlayerCurrency arrayOfDictionariesFromModels:bundle.prices];
+    NSArray* currencyObjects = [bundle getPricesJSONArray];
     [updatedData setObject:currencyObjects forKey:@"currencies"];
     NSDictionary *userInfo = @{@"event" : @"playerDataUpdated", @"reason" : reason, @"updatedData" : updatedData};
     [[NSNotificationCenter defaultCenter] postNotificationName:@"spilNotificationHandler" object:nil userInfo:userInfo];
@@ -577,7 +601,7 @@ static PlayerDataController* sharedInstance;
     return @"";
 }
 
--(void)sendUpdatePlayerDataEvent:(UserProfile*)userProfile withBundle:(Bundle*)bundle withReason:(NSString*)reason {
+-(void)sendUpdatePlayerDataEvent:(UserProfile*)userProfile withBundle:(Bundle*)bundle withReason:(NSString*)reason withLocation:(NSString*)location {
     NSMutableDictionary *requestData = [NSMutableDictionary dictionary];
     
     // Add wallet
@@ -610,8 +634,40 @@ static PlayerDataController* sharedInstance;
     }
     
     // Add update metadata
+    [requestData setObject:location forKey:@"location"];
     [requestData setObject:reason forKey:@"reason"];
     [[SpilEventTracker sharedInstance] trackEvent:@"updatePlayerData" withParameters:requestData];
+}
+
+-(void)resetPlayerData {
+    UserProfile *userProfile = [self getUserProfile];
+    [userProfile.inventory reset];
+    [userProfile.wallet reset];
+    [self updateUserProfile:userProfile];
+    [self sendUpdatePlayerDataEvent:userProfile withBundle:nil withReason:@"Reset" withLocation:@""];
+    
+    NSDictionary *userInfo = @{@"event" : @"playerDataUpdated", @"reason" : @"Reset"};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"spilNotificationHandler" object:nil userInfo:userInfo];
+}
+
+-(void)resetInventory {
+    UserProfile *userProfile = [self getUserProfile];
+    [userProfile.inventory reset];
+    [self updateUserProfile:userProfile];
+    [self sendUpdatePlayerDataEvent:userProfile withBundle:nil withReason:@"Reset" withLocation:@""];
+    
+    NSDictionary *userInfo = @{@"event" : @"playerDataUpdated", @"reason" : @"Reset"};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"spilNotificationHandler" object:nil userInfo:userInfo];
+}
+
+-(void)resetWallet {
+    UserProfile *userProfile = [self getUserProfile];
+    [userProfile.wallet reset];
+    [self updateUserProfile:userProfile];
+    [self sendUpdatePlayerDataEvent:userProfile withBundle:nil withReason:@"Reset" withLocation:@""];
+    
+    NSDictionary *userInfo = @{@"event" : @"playerDataUpdated", @"reason" : @"Reset"};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"spilNotificationHandler" object:nil userInfo:userInfo];
 }
 
 @end

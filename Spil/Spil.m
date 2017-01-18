@@ -8,9 +8,17 @@
 
 #import "Spil.h"
 #import "SpilEventTracker.h"
+#if TARGET_OS_IOS
+#import "SpilNotificationHelper.h"
+#import <GoogleMobileAds/GoogleMobileAds.h>
+#import <ZendeskSDK/ZendeskSDK.h>
+#import "CustomerSupportHandler.h"
+#endif
+#import "SpilAdvertisementHandler.h"
 #import "SpilAnalyticsHandler.h"
 #import "SpilConfigHandler.h"
 #import "SpilPackageHandler.h"
+#import "SpilAdvertisementHandler.h"
 #import "UserProfile.h"
 #import "GameDataController.h"
 #import "PlayerDataController.h"
@@ -20,8 +28,6 @@
 #import "SpilUserHandler.h"
 #import "SpilActionHandler.h"
 #import "NSString+Extensions.h"
-#import "AppLovinAdProvider.h"
-#import "SpilAdvertisementHandler.h"
 
 // C classes
 #include "HookBridge.h"
@@ -31,6 +37,18 @@
 @import StoreKit;
 @import SystemConfiguration;
 @import MediaPlayer;
+#if TARGET_OS_IOS
+@import CoreTelephony;
+@import EventKit;
+@import EventKitUI;
+@import MessageUI;
+@import Social;
+@import WebKit;
+@import AssetsLibrary;
+@import Twitter;
+@import Accounts;
+@import CoreMotion;
+#endif
 @import CoreGraphics;
 @import CoreLocation;
 @import AdSupport;
@@ -116,6 +134,9 @@ static Spil* sharedInstance;
             
             // When a new config is loaded also try to init other services again
             [[SpilAnalyticsHandler sharedInstance] initializeAnalyticsProviders];
+            #if TARGET_OS_IOS
+            [[CustomerSupportHandler sharedInstance] initialize];
+            #endif
             
             // Forward to unity
             [Spil sendMessage:@"ConfigUpdated" toObject:@"SpilSDK" withString:@""];
@@ -171,8 +192,12 @@ static Spil* sharedInstance;
             // Forward to unity
             NSMutableDictionary *data = [NSMutableDictionary dictionary];
             [data setObject:userInfo[@"reason"] forKey:@"reason"];
-            [data setObject:userInfo[@"updatedData"][@"currencies"] forKey:@"currencies"];
-            [data setObject:userInfo[@"updatedData"][@"items"] forKey:@"items"];
+            if (userInfo[@"updatedData"][@"currencies"] != nil) {
+                [data setObject:userInfo[@"updatedData"][@"currencies"] forKey:@"currencies"];
+            }
+            if (userInfo[@"updatedData"][@"items"] != nil) {
+                [data setObject:userInfo[@"updatedData"][@"items"] forKey:@"items"];
+            }
             [Spil sendMessage:@"PlayerDataUpdated" toObject:@"SpilSDK" withString:[JsonUtil convertObjectToJson:data]];
         }
         
@@ -311,12 +336,16 @@ static Spil* sharedInstance;
     
     [[SpilEventTracker sharedInstance] isUnity:usingUnity];
 
-    // Start the tracker, no need to pass an appid yet
+    // Start the tracker, no need to pass an app id yet
     [[SpilEventTracker sharedInstance] startWithAppId:@""];
     
     [self updateAppSettingsMenu];
     
     [self setAdvancedLoggingEnabled:NO];
+    
+    if (disableAutoPushNotificationRegistration == false) {
+        [self registerPushNotifications];
+    }
 }
 
 +(NSString*)getSpilUserId {
@@ -362,78 +391,221 @@ static Spil* sharedInstance;
 
 #pragma mark Event tracking
 
++(void)trackMilestoneAchievedEvent:(NSString*)name {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (name != nil) {
+        params[@"name"] = name;
+    }
+    [[SpilEventTracker sharedInstance] trackEvent:@"milestoneAchieved" withParameters:params];
+}
+
++(void)trackLevelStartEvent:(NSString*)level score:(double)score stars:(int)stars turns:(int)turns customCreated:(bool)customCreated creatorId:(NSString*)creatorId {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (level != nil) {
+        params[@"level"] = level;
+    }
+    params[@"score"] = [NSNumber numberWithInt:score];
+    params[@"stars"] = [NSNumber numberWithInt:stars];
+    params[@"turns"] = [NSNumber numberWithInt:turns];
+    params[@"customCreated"] = [NSNumber numberWithBool:customCreated];
+    if (creatorId != nil) {
+        params[@"creatorId"] = creatorId;
+    }
+    [[SpilEventTracker sharedInstance] trackEvent:@"levelStart" withParameters:params];
+}
+
++(void)trackLevelCompleteEvent:(NSString*)level score:(double)score stars:(int)stars turns:(int)turns customCreated:(bool)customCreated creatorId:(NSString*)creatorId {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (level != nil) {
+        params[@"level"] = level;
+    }
+    params[@"score"] = [NSNumber numberWithDouble:score];
+    params[@"stars"] = [NSNumber numberWithInt:stars];
+    params[@"turns"] = [NSNumber numberWithInt:turns];
+    params[@"customCreated"] = [NSNumber numberWithBool:customCreated];
+    if (creatorId != nil) {
+        params[@"creatorId"] = creatorId;
+    }
+    [[SpilEventTracker sharedInstance] trackEvent:@"levelComplete" withParameters:params];
+}
+
++(void)trackLevelFailedEvent:(NSString*)level score:(double)score stars:(int)stars turns:(int)turns customCreated:(bool)customCreated creatorId:(NSString*)creatorId {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (level != nil) {
+        params[@"level"] = level;
+    }
+    params[@"score"] = [NSNumber numberWithDouble:score];
+    params[@"stars"] = [NSNumber numberWithInt:stars];
+    params[@"turns"] = [NSNumber numberWithInt:turns];
+    params[@"customCreated"] = [NSNumber numberWithBool:customCreated];
+    if (creatorId != nil) {
+        params[@"creatorId"] = creatorId;
+    }
+    [[SpilEventTracker sharedInstance] trackEvent:@"levelFailed" withParameters:params];
+}
+
++(void)trackLevelUpEvent:(NSString*)level objectId:(NSString*)objectId skillId:(NSString*)skillId {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (level != nil) {
+        params[@"level"] = level;
+    }
+    if (objectId != nil) {
+        params[@"objectId"] = objectId;
+    }
+    if (skillId != nil) {
+        params[@"skillId"] = skillId;
+    }
+    [[SpilEventTracker sharedInstance] trackEvent:@"levelUp" withParameters:params];
+}
+
++(void)trackEquipEvent:(NSString*)equippedItem equippedTo:(NSString*)equippedTo {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (equippedItem != nil) {
+        params[@"equippedItem"] = equippedItem;
+    }
+    if (equippedTo != nil) {
+        params[@"equippedTo"] = equippedTo;
+    }
+    [[SpilEventTracker sharedInstance] trackEvent:@"equip" withParameters:params];
+}
+
++(void)trackUpgradeEvent:(NSString*)upgradeId level:(NSString*)level reason:(NSString*)reason iteration:(int)iteration {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (upgradeId != nil) {
+        params[@"upgradeId"] = upgradeId;
+    }
+    if (level != nil) {
+        params[@"level"] = level;
+    }
+    if (reason != nil) {
+        params[@"reason"] = reason;
+    }
+    params[@"iteration"] = [NSNumber numberWithInt:iteration];
+    [[SpilEventTracker sharedInstance] trackEvent:@"upgrade" withParameters:params];
+}
+
++(void)trackLevelCreateEvent:(NSString*)levelId creatorId:(NSString*)creatorId {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (levelId != nil) {
+        params[@"levelId"] = levelId;
+    }
+    if (creatorId != nil) {
+        params[@"creatorId"] = creatorId;
+    }
+    [[SpilEventTracker sharedInstance] trackEvent:@"levelCreate" withParameters:params];
+}
+
++(void)trackLevelDownloadEvent:(NSString*)levelId creatorId:(NSString*)creatorId rating:(int)rating {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (levelId != nil) {
+        params[@"levelId"] = levelId;
+    }
+    if (creatorId != nil) {
+        params[@"creatorId"] = creatorId;
+    }
+    params[@"rating"] = [NSNumber numberWithInt:rating];
+    [[SpilEventTracker sharedInstance] trackEvent:@"levelDownload" withParameters:params];
+}
+
++(void)trackLevelRateEvent:(NSString*)levelId creatorId:(NSString*)creatorId rating:(int)rating {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (levelId != nil) {
+        params[@"levelId"] = levelId;
+    }
+    if (creatorId != nil) {
+        params[@"creatorId"] = creatorId;
+    }
+    params[@"rating"] = [NSNumber numberWithInt:rating];
+    [[SpilEventTracker sharedInstance] trackEvent:@"levelRate" withParameters:params];
+}
+
++(void)trackEndlessModeStartEvent {
+    [[SpilEventTracker sharedInstance] trackEvent:@"endlessModeStart"];
+}
+
++(void)trackEndlessModeEndEvent:(int)distance {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"distance"] = [NSNumber numberWithInt:distance];
+    [[SpilEventTracker sharedInstance] trackEvent:@"endlessModeEnd" withParameters:params];
+}
+
++(void)trackPlayerDiesEvent:(NSString*)level {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (level != nil) {
+        params[@"level"] = level;
+    }
+    [[SpilEventTracker sharedInstance] trackEvent:@"playerDies" withParameters:params];
+}
+
++(void)requestRewardVideo:(NSString*)rewardType {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (rewardType != nil) {
+        params[@"rewardType"] = rewardType;
+    }
+    [[SpilEventTracker sharedInstance] trackEvent:@"requestRewardVideo" withParameters:params];
+}
+
++(void)trackWalletInventoryEvent:(NSString*)reason location:(NSString*)location currencyList:(NSString*)currencyList itemList:(NSString*)itemsList {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    if (reason != nil) {
+        params[@"reason"] = reason;
+    }
+    if (location != nil) {
+        params[@"location"] = location;
+    }
+    if (currencyList != nil) {
+        NSArray *currencies = [JsonUtil convertStringToObject:currencyList];
+        params[@"wallet"] = @{@"currencies": currencies};
+    } else {
+        params[@"wallet"] = @{};
+    }
+    if (itemsList != nil) {
+        NSArray *items = [JsonUtil convertStringToObject:itemsList];
+        params[@"inventory"] = @{@"items": items};
+    } else {
+        params[@"inventory"] = @{};
+    }
+    params[@"trackingOnly"] = [NSNumber numberWithBool:true];
+    [[SpilEventTracker sharedInstance] trackEvent:@"updatePlayerData" withParameters:params];
+}
+
 +(void)trackIAPPurchasedEvent:(NSString*)skuId transactionId:(NSString*)transactionId purchaseDate:(NSString*)purchaseDate {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"skuId"] = skuId;
-    params[@"transactionId"] = transactionId;
-    params[@"purchaseDate"] = purchaseDate;
+    if (skuId != nil) {
+        params[@"skuId"] = skuId;
+    }
+    if (transactionId != nil) {
+        params[@"transactionId"] = transactionId;
+    }
+    if (purchaseDate != nil) {
+        params[@"purchaseDate"] = purchaseDate;
+    }
     [[SpilEventTracker sharedInstance] trackEvent:@"iapPurchased" withParameters:params];
 }
 
 +(void)trackIAPRestoredEvent:(NSString*)skuId originalTransactionId:(NSString*)originalTransactionId originalPurchaseDate:(NSString*)originalPurchaseDate {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"skuId"] = skuId;
-    params[@"originalTransactionId"] = originalTransactionId;
-    params[@"originalPurchaseDate"] = originalPurchaseDate;
+    if (skuId != nil) {
+        params[@"skuId"] = skuId;
+    }
+    if (originalTransactionId != nil) {
+        params[@"originalTransactionId"] = originalTransactionId;
+    }
+    if (originalPurchaseDate != nil) {
+        params[@"originalPurchaseDate"] = originalPurchaseDate;
+    }
     [[SpilEventTracker sharedInstance] trackEvent:@"iapRestored" withParameters:params];
 }
 
 +(void)trackIAPFailedEvent:(NSString*)skuId error:(NSString*)error {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"skuId"] = skuId;
-    params[@"error"] = error;
+    if (skuId != nil) {
+        params[@"skuId"] = skuId;
+    }
+    if (error != nil) {
+        params[@"error"] = error;
+    }
     [[SpilEventTracker sharedInstance] trackEvent:@"iapFailed" withParameters:params];
-}
-
-+(void)trackWalletInventoryEvent:(NSString*)currencyList itemsList:(NSString*)itemsList reason:(NSString*)reason location:(NSString*)location {
-    NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    NSArray *currencies = [JsonUtil convertStringToObject:currencyList];
-    params[@"wallet"] = @{@"currencies": currencies};
-    NSArray *items = [JsonUtil convertStringToObject:itemsList];
-    params[@"items"] = items;
-    params[@"reason"] = reason;
-    params[@"location"] = location;
-    params[@"trackingOnly"] = [NSNumber numberWithBool:true];
-    [[SpilEventTracker sharedInstance] trackEvent:@"updatePlayerData" withParameters:params];
-}
-
-+(void)trackMilestoneEvent:(NSString*)name {
-    NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"name"] = name;
-    [[SpilEventTracker sharedInstance] trackEvent:@"milestoneAchieved" withParameters:params];
-}
-
-+(void)trackLevelStartEvent:(NSString*)level {
-    NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"level"] = level;
-    [[SpilEventTracker sharedInstance] trackEvent:@"levelStart" withParameters:params];
-}
-
-+(void)trackLevelCompleteEvent:(NSString*)level score:(NSString*)score stars:(NSString*)stars turns:(NSString*)turns {
-    NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"level"] = level;
-    if(score != nil) {
-        params[@"score"] = score;
-    }
-    if(stars != nil) {
-        params[@"stars"] = stars;
-    }
-    if(turns != nil) {
-        params[@"turns"] = turns;
-    }
-    [[SpilEventTracker sharedInstance] trackEvent:@"levelComplete" withParameters:params];
-}
-
-+(void)trackLevelFailed:(NSString*)level score:(NSString*)score turns:(NSString*)turns {
-    NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"level"] = level;
-    if(score != nil) {
-        params[@"score"] = score;
-    }
-    if(turns != nil) {
-        params[@"turns"] = turns;
-    }
-    [[SpilEventTracker sharedInstance] trackEvent:@"levelFailed" withParameters:params];
 }
 
 +(void)trackTutorialCompleteEvent {
@@ -446,19 +618,25 @@ static Spil* sharedInstance;
 
 +(void)trackRegisterEvent:(NSString*)platform {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"platform"] = platform;
+    if (platform != nil) {
+        params[@"platform"] = platform;
+    }
     [[SpilEventTracker sharedInstance] trackEvent:@"register" withParameters:params];
 }
 
 +(void)trackShareEvent:(NSString*)platform {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"platform"] = platform;
+    if (platform != nil) {
+        params[@"platform"] = platform;
+    }
     [[SpilEventTracker sharedInstance] trackEvent:@"share" withParameters:params];
 }
 
 +(void)trackInviteEvent:(NSString*)platform {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"platform"] = platform;
+    if (platform != nil) {
+        params[@"platform"] = platform;
+    }
     [[SpilEventTracker sharedInstance] trackEvent:@"invite" withParameters:params];
 }
 
@@ -503,6 +681,11 @@ static Spil* sharedInstance;
     // Request a advertisement init
     [self trackEvent:@"advertisementInit"];
     
+    // Initialize the customer support handler
+    #if TARGET_OS_IOS
+    [[CustomerSupportHandler sharedInstance] initialize];
+    #endif
+    
     // Request the game and player data
     [self requestGameData];
     
@@ -510,8 +693,25 @@ static Spil* sharedInstance;
     [[SpilUserHandler sharedInstance] getMyGameState];
     
     // Initialize app lovin
+    #if TARGET_OS_TV
     AppLovinAdProvider *appLovin = [[SpilAdvertisementHandler sharedInstance] getAppLovinAdProvider];
     [appLovin initialize:nil];
+    #endif
+}
+
++(void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    #if TARGET_OS_IOS
+    NSDictionary* userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (userInfo != nil) {
+        [SpilNotificationHelper application:application didReceiveRemoteNotification:userInfo didLaunchApp:true];
+    }
+    #endif
+}
+
++(void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
+    #if TARGET_OS_IOS
+    [SpilNotificationHelper application:application didReceiveRemoteNotification:userInfo didLaunchApp:false];
+    #endif
 }
 
 #pragma mark Send message
@@ -544,6 +744,24 @@ static Spil* sharedInstance;
         
     }
     
+}
+
+#pragma mark Push notifications
+
++(void)disableAutomaticRegisterForPushNotifications {
+    disableAutoPushNotificationRegistration = true;
+}
+
++(void)registerPushNotifications {
+    #if TARGET_OS_IOS
+    [SpilNotificationHelper registerPushNotifications];
+    #endif
+}
+
++(void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
+    #if TARGET_OS_IOS
+    [SpilNotificationHelper didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+    #endif
 }
 
 #pragma mark Config
@@ -581,6 +799,9 @@ static Spil* sharedInstance;
 #pragma mark Ads
 
 +(void)showMoreApps{
+    #if TARGET_OS_IOS
+    [[SpilAdvertisementHandler sharedInstance] showMoreApps:@"chartboost"];
+    #endif
 }
 
 +(void)playRewardVideo {
@@ -588,14 +809,20 @@ static Spil* sharedInstance;
 }
 
 +(BOOL)isAdProviderInitialized:(NSString*)identifier {
-    return false;
+    return [[SpilAdvertisementHandler sharedInstance] isAdProviderInitialized:identifier];
 }
 
 +(void)showToastOnVideoReward:(BOOL)enabled{
-
+    #if TARGET_OS_IOS
+    FyberAdProvider *fyber = [[SpilAdvertisementHandler sharedInstance] getFyberAdProvider];
+    [fyber setShouldShowToastOnReward:enabled];
+    #endif
 }
 
 +(void)closedParentalGate:(BOOL)pass{
+    #if TARGET_OS_IOS
+    [[SpilAdvertisementHandler sharedInstance] closedParentalGate:pass];
+    #endif
 }
 
 #pragma mark UserData & GameData
@@ -636,24 +863,56 @@ static Spil* sharedInstance;
     return [[GameDataController sharedInstance] getShopPromotions];
 }
 
-+(void)addCurrencyToWallet:(int)currencyId withAmount:(int)amount withReason:(NSString*)reason {
-    [[PlayerDataController sharedInstance] updateWallet:currencyId withDelta:amount withReason:reason];
++(void)addCurrencyToWallet:(int)currencyId withAmount:(int)amount withReason:(NSString*)reason withLocation:(NSString*)location {
+    [[PlayerDataController sharedInstance] updateWallet:currencyId withDelta:amount withReason:reason withLocation:location];
 }
 
-+(void)subtractCurrencyFromWallet:(int)currencyId withAmount:(int)amount withReason:(NSString*)reason {
-    [[PlayerDataController sharedInstance] updateWallet:currencyId withDelta:-amount withReason:reason];
++(void)subtractCurrencyFromWallet:(int)currencyId withAmount:(int)amount withReason:(NSString*)reason withLocation:(NSString*)location {
+    [[PlayerDataController sharedInstance] updateWallet:currencyId withDelta:-amount withReason:reason withLocation:location];
 }
 
-+(void)addItemToInventory:(int)itemId withAmount:(int)amount withReason:(NSString*)reason {
-    [[PlayerDataController sharedInstance] updateInventoryWithItem:itemId withAmount:amount withAction:@"add" withReason:reason];
++(void)addItemToInventory:(int)itemId withAmount:(int)amount withReason:(NSString*)reason withLocation:(NSString*)location {
+    [[PlayerDataController sharedInstance] updateInventoryWithItem:itemId withAmount:amount withAction:@"add" withReason:reason withLocation:location];
 }
 
-+(void)subtractItemFromInventory:(int)itemId withAmount:(int)amount withReason:(NSString*)reason {
-    [[PlayerDataController sharedInstance] updateInventoryWithItem:itemId withAmount:amount withAction:@"subtract" withReason:reason];
++(void)subtractItemFromInventory:(int)itemId withAmount:(int)amount withReason:(NSString*)reason withLocation:(NSString*)location {
+    [[PlayerDataController sharedInstance] updateInventoryWithItem:itemId withAmount:amount withAction:@"subtract" withReason:reason withLocation:location];
 }
 
-+(void)consumeBundle:(int)bundleId withReason:(NSString*)reason {
-    [[PlayerDataController sharedInstance] updateInventoryWithBundle:bundleId withReason:reason];
++(void)buyBundle:(int)bundleId withReason:(NSString*)reason withLocation:(NSString*)location {
+    [[PlayerDataController sharedInstance] updateInventoryWithBundle:bundleId withReason:reason withLocation:location];
+}
+
++(void)resetPlayerData {
+    [[PlayerDataController sharedInstance] resetPlayerData];
+}
+
++(void)resetInventory {
+    [[PlayerDataController sharedInstance] resetInventory];
+}
+
++(void)resetWallet {
+    [[PlayerDataController sharedInstance] resetWallet];
+}
+
+#pragma mark Customer support
+
++(void)showHelpCenter {
+    #if TARGET_OS_IOS
+    [[CustomerSupportHandler sharedInstance] showHelpCenter];
+    #endif
+}
+
++(void)showContactCenter {
+    #if TARGET_OS_IOS
+    [[CustomerSupportHandler sharedInstance] showContactCenter];
+    #endif
+}
+
++(void)showHelpCenterWebview {
+    #if TARGET_OS_IOS
+    [[CustomerSupportHandler sharedInstance] showHelpCenterWebview];
+    #endif
 }
 
 #pragma mark Web
@@ -706,6 +965,7 @@ static Spil* sharedInstance;
     /*if ([adType isEqualToString:@"banner"]) {
         [Spil showBanner];
     } else {*/
+        [[SpilAdvertisementHandler sharedInstance] requestAd:provider withAdType:adType withParentalGate:parentalGate];
     //}
 }
 
@@ -718,6 +978,9 @@ static Spil* sharedInstance;
 }
 
 +(void)devShowMoreApps:(NSString*)adProvider {
+    #if TARGET_OS_IOS
+    [[SpilAdvertisementHandler sharedInstance] showMoreApps:adProvider];
+    #endif
 }
 
 /*+(void)showBanner {

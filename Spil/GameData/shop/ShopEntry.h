@@ -7,15 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "JSONModel.h"
 
-@protocol ShopEntry
-@end
-
-@interface ShopEntry : JSONModel
+@interface ShopEntry : NSObject
 
 @property (nonatomic, assign) int bundleId;
 @property (nonatomic, strong) NSString* label;
 @property (nonatomic, assign) int position;
+
+-(id)initWithDictionary:(NSDictionary*)dict;
+
+-(NSDictionary*)toJSONObject;
 
 @end

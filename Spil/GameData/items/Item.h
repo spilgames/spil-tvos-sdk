@@ -7,17 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "JSONModel.h"
 
-@protocol Item
-@end
-
-@interface Item : JSONModel
+@interface Item : NSObject
 
 @property (assign, nonatomic) int id;
 @property (strong, nonatomic) NSString *name;
 @property (assign, nonatomic) int type;
+@property (assign, nonatomic) int initialValue;
 
--(id)init;
+-(id)initWithDictionary:(NSDictionary*)dict;
+
+-(NSMutableDictionary*)toJSONObject;
 
 @end

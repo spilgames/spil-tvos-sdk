@@ -28,11 +28,15 @@
 -(NSString*)getWallet;
 -(NSString*)getInventory;
 
--(void)updateWallet:(int)currencyId withDelta:(int)delta withReason:(NSString*)reason;
--(void)updateInventoryWithItem:(int)itemId withAmount:(int)amount withAction:(NSString*)action withReason:(NSString*)reason;
--(void)updateInventoryWithBundle:(int)bundleId withReason:(NSString*)reason;
+-(void)updateWallet:(int)currencyId withDelta:(int)delta withReason:(NSString*)reason withLocation:(NSString*)location;
+-(void)updateInventoryWithItem:(int)itemId withAmount:(int)amount withAction:(NSString*)action withReason:(NSString*)reason withLocation:(NSString*)location;
+-(void)updateInventoryWithBundle:(int)bundleId withReason:(NSString*)reason withLocation:(NSString*)location;
 -(void)updateUserProfile:(UserProfile*)userProfile;
 
 -(NSString*)loadPlayerDataFromAssets;
+
+-(void)resetPlayerData;
+-(void)resetInventory;
+-(void)resetWallet;
 
 @end

@@ -13,15 +13,32 @@
 @synthesize id;
 @synthesize name;
 @synthesize type;
+@synthesize initialValue;
 
--(id)init {
+-(id)initWithDictionary:(NSDictionary*)dict {
     self = [super init];
+    
+    self.id = [dict[@"id"] intValue];
+    self.name = dict[@"name"];
+    self.type = [dict[@"type"] intValue];
+    self.initialValue = [dict[@"initialValue"] intValue];
     
     return self;
 }
 
-+(BOOL)propertyIsOptional:(NSString*)propertyName {
-    return YES;
+-(NSMutableDictionary*)toJSONObject {
+    NSMutableDictionary *rootDict = [NSMutableDictionary dictionary];
+    
+    [rootDict setObject:[NSNumber numberWithInt:self.id] forKey:@"id"];
+    
+    if (self.name != nil) {
+        [rootDict setObject:self.name forKey:@"name"];
+    }
+
+    [rootDict setObject:[NSNumber numberWithInt:self.type] forKey:@"type"];
+    [rootDict setObject:[NSNumber numberWithInt:self.initialValue] forKey:@"initialValue"];
+    
+    return rootDict;
 }
 
 @end

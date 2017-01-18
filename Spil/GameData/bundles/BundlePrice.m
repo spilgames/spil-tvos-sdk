@@ -13,14 +13,22 @@
 @synthesize currencyId;
 @synthesize value;
 
--(id)init {
+-(id)initWithDictionary:(NSDictionary*)dict {
     self = [super init];
+    
+    self.currencyId = [dict[@"currencyId"] intValue];
+    self.value = [dict[@"value"] intValue];
     
     return self;
 }
 
-+(BOOL)propertyIsOptional:(NSString*)propertyName {
-    return YES;
+-(NSDictionary*)toJSONObject {
+    NSMutableDictionary *rootDict = [NSMutableDictionary dictionary];
+    
+    [rootDict setObject:[NSNumber numberWithInt:self.currencyId] forKey:@"currencyId"];
+    [rootDict setObject:[NSNumber numberWithInt:self.value] forKey:@"value"];
+    
+    return rootDict;
 }
 
 @end

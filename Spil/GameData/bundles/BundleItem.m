@@ -13,14 +13,22 @@
 @synthesize id;
 @synthesize amount;
 
--(id)init {
+-(id)initWithDictionary:(NSDictionary*)dict {
     self = [super init];
+    
+    self.id = [dict[@"id"] intValue];
+    self.amount = [dict[@"amount"] intValue];
     
     return self;
 }
 
-+(BOOL)propertyIsOptional:(NSString*)propertyName {
-    return YES;
+-(NSDictionary*)toJSONObject {
+    NSMutableDictionary *rootDict = [NSMutableDictionary dictionary];
+    
+    [rootDict setObject:[NSNumber numberWithInt:self.id] forKey:@"id"];
+    [rootDict setObject:[NSNumber numberWithInt:self.amount] forKey:@"amount"];
+    
+    return rootDict;
 }
 
 @end

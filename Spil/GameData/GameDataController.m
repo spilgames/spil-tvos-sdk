@@ -14,8 +14,6 @@
 #import "SpilEventTracker.h"
 #import "Currency.h"
 #import "SpilError.h"
-#import "NSArray+JSONModelExtensions.h"
-#import "JsonModel.h"
 #import "Util.h"
 
 @implementation GameDataController
@@ -37,31 +35,13 @@ static GameDataController* sharedInstance;
 }
 
 -(void)processGameData:(NSDictionary*)data {
-    NSError *error = nil;
-    NSMutableArray *currencies = [Currency arrayOfModelsFromDictionaries:data[@"currencies"] error:&error];
-    NSMutableArray *items = [Item arrayOfModelsFromDictionaries:data[@"items"] error:&error];
-    NSMutableArray *bundles = nil;//[Bundle arrayOfModelsFromDictionaries:data[@"bundles"] error:&error];
-    NSMutableArray *shopTabs = [ShopTab arrayOfModelsFromDictionaries:data[@"shop"] error:&error];
-    NSMutableArray *shopPromotions = [ShopPromotion arrayOfModelsFromDictionaries:data[@"promotions"] error:&error];
-    [[GameDataController sharedInstance] processGameData:currencies withItems:items withBundles:bundles withShopTabs:shopTabs withShopPromotions:shopPromotions];
-}
-
--(void)processGameData:(NSArray*)currencies withItems:(NSArray*)items withBundles:(NSArray*)bundles withShopTabs:(NSArray*)shopTabs withShopPromotions:(NSArray*)shopPromotions {
-    GameData *gameData = [self getGameData];
-    
-    if (gameData != nil) {
-        gameData.currencies = [currencies mutableCopy];
-        gameData.items = [items mutableCopy];
-        gameData.bundles = [bundles mutableCopy];
-        gameData.shop = [shopTabs mutableCopy];
-        gameData.promotions = [shopPromotions mutableCopy];
+    GameData *gameData = [[GameData alloc] initWithDictionary:data];
         
-        [self updateGameData:gameData];
+    [self updateGameData:gameData];
         
-        // Send a notification when the data is loaded
-        NSDictionary *userInfo = @{@"event" : @"gameDataAvailable"};
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"spilNotificationHandler" object:nil userInfo:userInfo];
-    }
+    // Send a notification when the data is loaded
+    NSDictionary *userInfo = @{@"event" : @"gameDataAvailable"};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"spilNotificationHandler" object:nil userInfo:userInfo];
 }
 
 -(GameData*)getGameData {
@@ -69,8 +49,8 @@ static GameDataController* sharedInstance;
     NSString *gameObjects = [defaults objectForKey:@"spilGameData"];
 
     if(gameObjects != nil){
-        NSError *error = nil;
-        return [[GameData alloc] initWithString:gameObjects error:&error];
+        NSDictionary *data = [JsonUtil convertStringToObject:gameObjects];
+        return [[GameData alloc] initWithDictionary:data];
     } else {
         gameObjects = [self loadGameDataFromAssets];
         
@@ -78,8 +58,8 @@ static GameDataController* sharedInstance;
             [defaults setObject:gameObjects forKey:@"spilGameData"];
             [defaults synchronize];
             
-            NSError *error = nil;
-            return [[GameData alloc] initWithString:gameObjects error:&error];
+            NSDictionary *data = [JsonUtil convertStringToObject:gameObjects];
+            return [[GameData alloc] initWithDictionary:data];
         } else {
             // Send a notification when the data failed to load
             NSDictionary *userInfo = @{@"event" : @"gameDataError", @"message" : [[SpilError LoadFailed:@"Game Object container is empty!"] toJson]};
@@ -192,9 +172,7 @@ static GameDataController* sharedInstance;
         }
     }
     
-    //NSArray* jsonObjects = [ShopTab arrayOfDictionariesFromModels: [gameData shopTabs]];
-    //return [JsonUtil convertObjectToJson:jsonObjects];
-    return [[gameData shop] toJSONString];
+    return [gameData getShopJSONString];
 }
 
 -(NSString*)getShopPromotions {
@@ -216,7 +194,7 @@ static GameDataController* sharedInstance;
         }
     }
     
-    return [[gameData promotions] toJSONString];
+    return [gameData getPromotionsJSONString];
 }
 
 - (ShopPromotion*)getPromotion:(int)bundleId {

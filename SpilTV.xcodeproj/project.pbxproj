@@ -43,24 +43,12 @@
 		140956CA1DF5491700256F07 /* ALSwiftHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 140956AF1DF5491700256F07 /* ALSwiftHeaders.h */; };
 		140956CB1DF5491700256F07 /* ALTargetingData.h in Headers */ = {isa = PBXBuildFile; fileRef = 140956B01DF5491700256F07 /* ALTargetingData.h */; };
 		140956CC1DF5491700256F07 /* libAppLovinTVOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 140956B11DF5491700256F07 /* libAppLovinTVOS.a */; };
-		1435C8851D659224000EAA9F /* NSArray+JSONModelExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1435C8811D659224000EAA9F /* NSArray+JSONModelExtensions.h */; };
-		1435C8861D659224000EAA9F /* NSArray+JSONModelExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1435C8821D659224000EAA9F /* NSArray+JSONModelExtensions.m */; };
 		1435C8871D659224000EAA9F /* NSString+Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1435C8831D659224000EAA9F /* NSString+Extensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1435C8881D659224000EAA9F /* NSString+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1435C8841D659224000EAA9F /* NSString+Extensions.m */; };
 		1435C88B1D6592FE000EAA9F /* Util.h in Headers */ = {isa = PBXBuildFile; fileRef = 1435C8891D6592FE000EAA9F /* Util.h */; };
 		1435C88C1D6592FE000EAA9F /* Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 1435C88A1D6592FE000EAA9F /* Util.m */; };
 		14828BB31DA274FC00414EA7 /* NotificationUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 14828BB11DA274FC00414EA7 /* NotificationUtil.h */; };
 		14828BB41DA274FC00414EA7 /* NotificationUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 14828BB21DA274FC00414EA7 /* NotificationUtil.m */; };
-		14C815691DEECB6C0046BFAE /* JSONModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 14C8155E1DEECB6C0046BFAE /* JSONModel.h */; };
-		14C8156A1DEECB6C0046BFAE /* JSONModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C8155F1DEECB6C0046BFAE /* JSONModel.m */; };
-		14C8156B1DEECB6C0046BFAE /* JSONModelClassProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 14C815601DEECB6C0046BFAE /* JSONModelClassProperty.h */; };
-		14C8156C1DEECB6C0046BFAE /* JSONModelClassProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C815611DEECB6C0046BFAE /* JSONModelClassProperty.m */; };
-		14C8156D1DEECB6C0046BFAE /* JSONModelError.h in Headers */ = {isa = PBXBuildFile; fileRef = 14C815621DEECB6C0046BFAE /* JSONModelError.h */; };
-		14C8156E1DEECB6C0046BFAE /* JSONModelError.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C815631DEECB6C0046BFAE /* JSONModelError.m */; };
-		14C8156F1DEECB6C0046BFAE /* JSONKeyMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 14C815651DEECB6C0046BFAE /* JSONKeyMapper.h */; };
-		14C815701DEECB6C0046BFAE /* JSONKeyMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C815661DEECB6C0046BFAE /* JSONKeyMapper.m */; };
-		14C815711DEECB6C0046BFAE /* JSONValueTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 14C815671DEECB6C0046BFAE /* JSONValueTransformer.h */; };
-		14C815721DEECB6C0046BFAE /* JSONValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C815681DEECB6C0046BFAE /* JSONValueTransformer.m */; };
 		CC21F1FC1CD8820A00EC9020 /* SpilAppStoreHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CC21F1FA1CD8820A00EC9020 /* SpilAppStoreHandler.h */; };
 		CC21F1FD1CD8820A00EC9020 /* SpilAppStoreHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CC21F1FB1CD8820A00EC9020 /* SpilAppStoreHandler.m */; };
 		CC21F2001CD8D16000EC9020 /* AppStoreRequestData.h in Headers */ = {isa = PBXBuildFile; fileRef = CC21F1FE1CD8D16000EC9020 /* AppStoreRequestData.h */; };
@@ -174,24 +162,12 @@
 		140956AF1DF5491700256F07 /* ALSwiftHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALSwiftHeaders.h; sourceTree = "<group>"; };
 		140956B01DF5491700256F07 /* ALTargetingData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALTargetingData.h; sourceTree = "<group>"; };
 		140956B11DF5491700256F07 /* libAppLovinTVOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAppLovinTVOS.a; sourceTree = "<group>"; };
-		1435C8811D659224000EAA9F /* NSArray+JSONModelExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSArray+JSONModelExtensions.h"; path = "Spil/Util/NSArray+JSONModelExtensions.h"; sourceTree = SOURCE_ROOT; };
-		1435C8821D659224000EAA9F /* NSArray+JSONModelExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSArray+JSONModelExtensions.m"; path = "Spil/Util/NSArray+JSONModelExtensions.m"; sourceTree = SOURCE_ROOT; };
 		1435C8831D659224000EAA9F /* NSString+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Extensions.h"; path = "Spil/Util/NSString+Extensions.h"; sourceTree = SOURCE_ROOT; };
 		1435C8841D659224000EAA9F /* NSString+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+Extensions.m"; path = "Spil/Util/NSString+Extensions.m"; sourceTree = SOURCE_ROOT; };
 		1435C8891D6592FE000EAA9F /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		1435C88A1D6592FE000EAA9F /* Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Util.m; sourceTree = "<group>"; };
 		14828BB11DA274FC00414EA7 /* NotificationUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationUtil.h; sourceTree = "<group>"; };
 		14828BB21DA274FC00414EA7 /* NotificationUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationUtil.m; sourceTree = "<group>"; };
-		14C8155E1DEECB6C0046BFAE /* JSONModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONModel.h; sourceTree = "<group>"; };
-		14C8155F1DEECB6C0046BFAE /* JSONModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONModel.m; sourceTree = "<group>"; };
-		14C815601DEECB6C0046BFAE /* JSONModelClassProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONModelClassProperty.h; sourceTree = "<group>"; };
-		14C815611DEECB6C0046BFAE /* JSONModelClassProperty.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONModelClassProperty.m; sourceTree = "<group>"; };
-		14C815621DEECB6C0046BFAE /* JSONModelError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONModelError.h; sourceTree = "<group>"; };
-		14C815631DEECB6C0046BFAE /* JSONModelError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONModelError.m; sourceTree = "<group>"; };
-		14C815651DEECB6C0046BFAE /* JSONKeyMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKeyMapper.h; sourceTree = "<group>"; };
-		14C815661DEECB6C0046BFAE /* JSONKeyMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKeyMapper.m; sourceTree = "<group>"; };
-		14C815671DEECB6C0046BFAE /* JSONValueTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONValueTransformer.h; sourceTree = "<group>"; };
-		14C815681DEECB6C0046BFAE /* JSONValueTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONValueTransformer.m; sourceTree = "<group>"; };
 		14E5D4AE1DEED750000AE2EA /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		CC21F1FA1CD8820A00EC9020 /* SpilAppStoreHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpilAppStoreHandler.h; sourceTree = "<group>"; };
 		CC21F1FB1CD8820A00EC9020 /* SpilAppStoreHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpilAppStoreHandler.m; sourceTree = "<group>"; };
@@ -385,34 +361,8 @@
 			isa = PBXGroup;
 			children = (
 				140956941DF5491700256F07 /* AppLovin */,
-				14C8155D1DEECB6C0046BFAE /* JSONModel */,
 			);
 			path = 3rd_party_frameworks;
-			sourceTree = "<group>";
-		};
-		14C8155D1DEECB6C0046BFAE /* JSONModel */ = {
-			isa = PBXGroup;
-			children = (
-				14C8155E1DEECB6C0046BFAE /* JSONModel.h */,
-				14C8155F1DEECB6C0046BFAE /* JSONModel.m */,
-				14C815601DEECB6C0046BFAE /* JSONModelClassProperty.h */,
-				14C815611DEECB6C0046BFAE /* JSONModelClassProperty.m */,
-				14C815621DEECB6C0046BFAE /* JSONModelError.h */,
-				14C815631DEECB6C0046BFAE /* JSONModelError.m */,
-				14C815641DEECB6C0046BFAE /* JSONModelTransformations */,
-			);
-			path = JSONModel;
-			sourceTree = "<group>";
-		};
-		14C815641DEECB6C0046BFAE /* JSONModelTransformations */ = {
-			isa = PBXGroup;
-			children = (
-				14C815651DEECB6C0046BFAE /* JSONKeyMapper.h */,
-				14C815661DEECB6C0046BFAE /* JSONKeyMapper.m */,
-				14C815671DEECB6C0046BFAE /* JSONValueTransformer.h */,
-				14C815681DEECB6C0046BFAE /* JSONValueTransformer.m */,
-			);
-			path = JSONModelTransformations;
 			sourceTree = "<group>";
 		};
 		CC21F1F91CD8820900EC9020 /* AppStoreHandler */ = {
@@ -547,8 +497,6 @@
 		CCCB2FE61D337D0600B7AD16 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				1435C8811D659224000EAA9F /* NSArray+JSONModelExtensions.h */,
-				1435C8821D659224000EAA9F /* NSArray+JSONModelExtensions.m */,
 				1435C8831D659224000EAA9F /* NSString+Extensions.h */,
 				1435C8841D659224000EAA9F /* NSString+Extensions.m */,
 			);
@@ -628,7 +576,6 @@
 				CC21F1FC1CD8820A00EC9020 /* SpilAppStoreHandler.h in Headers */,
 				CC95D5D71CEB5901002E0B8D /* GameData.h in Headers */,
 				CC95D5C71CEB51FA002E0B8D /* PlayerCurrency.h in Headers */,
-				1435C8851D659224000EAA9F /* NSArray+JSONModelExtensions.h in Headers */,
 				140956C31DF5491700256F07 /* ALNativeAdLoadDelegate.h in Headers */,
 				140956C21DF5491700256F07 /* ALNativeAd.h in Headers */,
 				140956B81DF5491700256F07 /* ALAdType.h in Headers */,
@@ -645,15 +592,12 @@
 				140956C81DF5491700256F07 /* ALSdk.h in Headers */,
 				CCE301DE1D115DF9009C6988 /* ShopEntry.h in Headers */,
 				140956BB1DF5491700256F07 /* ALAdView.h in Headers */,
-				14C815711DEECB6C0046BFAE /* JSONValueTransformer.h in Headers */,
 				14828BB31DA274FC00414EA7 /* NotificationUtil.h in Headers */,
-				14C8156F1DEECB6C0046BFAE /* JSONKeyMapper.h in Headers */,
 				140956921DF5490C00256F07 /* SpilAdvertisementHandler.h in Headers */,
 				CC95D5CB1CEB5329002E0B8D /* Inventory.h in Headers */,
 				CC95D5E31CEB5C4B002E0B8D /* Bundle.h in Headers */,
 				140956C51DF5491700256F07 /* ALNativeAdService.h in Headers */,
 				CCCB2FE41D337CE400B7AD16 /* SpilError.h in Headers */,
-				14C815691DEECB6C0046BFAE /* JSONModel.h in Headers */,
 				CC95D5BF1CEB4F32002E0B8D /* UserProfile.h in Headers */,
 				140956CA1DF5491700256F07 /* ALSwiftHeaders.h in Headers */,
 				CC95D5F21CEC4859002E0B8D /* GameDataController.h in Headers */,
@@ -672,11 +616,9 @@
 				CCE301E01D115DF9009C6988 /* ShopTab.h in Headers */,
 				CCC684891CEC9CA0005C6A15 /* PlayerDataController.h in Headers */,
 				CCE301DC1D115DF9009C6988 /* ShopPromotion.h in Headers */,
-				14C8156B1DEECB6C0046BFAE /* JSONModelClassProperty.h in Headers */,
 				CC95D5CF1CEB54A7002E0B8D /* PlayerItem.h in Headers */,
 				140956BF1DF5491700256F07 /* ALEventTypes.h in Headers */,
 				CC95D5DF1CEB5B88002E0B8D /* Currency.h in Headers */,
-				14C8156D1DEECB6C0046BFAE /* JSONModelError.h in Headers */,
 				140956B31DF5491700256F07 /* ALAdDisplayDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -763,13 +705,10 @@
 				CC95D5E81CEB5CF7002E0B8D /* BundleItem.m in Sources */,
 				CCCB30221D33849000B7AD16 /* SpilPackageHandler.m in Sources */,
 				CC95D5D01CEB54A7002E0B8D /* PlayerItem.m in Sources */,
-				14C8156C1DEECB6C0046BFAE /* JSONModelClassProperty.m in Sources */,
 				CC95D5F31CEC4859002E0B8D /* GameDataController.m in Sources */,
 				1409568F1DF5490C00256F07 /* AppLovinAdProvider.m in Sources */,
 				CC5147A11CF317F7005EE8A8 /* JsonUtil.m in Sources */,
 				CC95D5C01CEB4F32002E0B8D /* UserProfile.m in Sources */,
-				1435C8861D659224000EAA9F /* NSArray+JSONModelExtensions.m in Sources */,
-				14C8156E1DEECB6C0046BFAE /* JSONModelError.m in Sources */,
 				CC2431FA1D361FE1006B813D /* SpilAnalyticsHandler.m in Sources */,
 				CC95D5C81CEB51FA002E0B8D /* PlayerCurrency.m in Sources */,
 				CCCB2FE11D337C7200B7AD16 /* SpilUserHandler.m in Sources */,
@@ -784,9 +723,7 @@
 				CCCB300D1D337F8400B7AD16 /* SpilConfigHandler.m in Sources */,
 				CC95D5E41CEB5C4B002E0B8D /* Bundle.m in Sources */,
 				CCE301DF1D115DF9009C6988 /* ShopEntry.m in Sources */,
-				14C815721DEECB6C0046BFAE /* JSONValueTransformer.m in Sources */,
 				1094857B1BBD7DE3009D1B46 /* HookBridge.mm in Sources */,
-				14C815701DEECB6C0046BFAE /* JSONKeyMapper.m in Sources */,
 				109485621BBD7D7F009D1B46 /* Spil.m in Sources */,
 				1435C88C1D6592FE000EAA9F /* Util.m in Sources */,
 				CCCB2FE51D337CE400B7AD16 /* SpilError.m in Sources */,
@@ -795,7 +732,6 @@
 				140956931DF5490C00256F07 /* SpilAdvertisementHandler.m in Sources */,
 				CC9C5DF51CF5801F007951EF /* ClassUtil.m in Sources */,
 				CC95D5C41CEB5091002E0B8D /* Wallet.m in Sources */,
-				14C8156A1DEECB6C0046BFAE /* JSONModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

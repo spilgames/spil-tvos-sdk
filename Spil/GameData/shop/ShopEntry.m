@@ -14,14 +14,28 @@
 @synthesize label;
 @synthesize position;
 
--(id)init {
+-(id)initWithDictionary:(NSDictionary*)dict {
     self = [super init];
+    
+    self.bundleId = [dict[@"bundleId"] intValue];
+    self.label = dict[@"label"];
+    self.position = [dict[@"position"] intValue];
     
     return self;
 }
 
-+(BOOL)propertyIsOptional:(NSString*)propertyName {
-    return YES;
+-(NSDictionary*)toJSONObject {
+    NSMutableDictionary *rootDict = [NSMutableDictionary dictionary];
+    
+    [rootDict setObject:[NSNumber numberWithInt:self.bundleId] forKey:@"bundleId"];
+    
+    if (self.label != nil) {
+        [rootDict setObject:self.label forKey:@"label"];
+    }
+    
+    [rootDict setObject:[NSNumber numberWithInt:self.position] forKey:@"position"];
+    
+    return rootDict;
 }
 
 @end

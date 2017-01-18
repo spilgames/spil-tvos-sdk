@@ -26,26 +26,46 @@ extern "C" {
     
     void trackEventWithParamsNative(const char* eventName, const char* jsonStringParams);
     
+    // --- Default events (Not used by the unity plugin, it uses the generic track event methods ---
+    
+    void trackMilestoneAchievedEvent(const char* name);
+    
+    void trackLevelStartEvent(const char* level, int score, int stars, int turns, bool customCreated, const char* creatorId);
+    
+    void trackLevelCompleteEvent(const char* level, int score, int stars, int turns, bool customCreated, const char* creatorId);
+    
+    void trackLevelFailed(const char* level, int score, int stars, int turns, bool customCreated, const char* creatorId);
+
+    void trackLevelUpEvent(const char* level, const char* objectId, const char* skillId);
+
+    void trackEquipEvent(const char* equippedItem, const char* equippedTo);
+    
+    void trackUpgradeEvent(const char* upgradeId, const char* level, const char* reason, int iteration);
+    
+    void trackLevelCreateEvent(const char* levelId, const char* creatorId);
+    
+    void trackLevelDownloadEvent(const char* levelId, const char* creatorId, int rating);
+    
+    void trackLevelRateEvent(const char* levelId, const char* creatorId, int rating);
+
+    void trackEndlessModeStartEvent();
+    
+    void trackEndlessModeEndEvent(int distance);
+
+    void trackPlayerDiesEvent(const char* level);
+    
+    void trackWalletInventoryEvent(const char* currencyList, const char* itemsList, const char* reason, const char* location);
+    
     void trackIAPPurchasedEvent(const char* skuId, const char* transactionId, const char* purchaseDate);
 
     void trackIAPRestoredEvent(const char* skuId, const char* originalTransactionId, const char* originalPurchaseDate);
 
     void trackIAPFailedEvent(const char* skuId, const char* error);
 
-    void trackWalletInventoryEvent(const char* currencyList, const char* itemsList, const char* reason, const char* location);
-
-    void trackMilestoneEvent(const char* name);
-
-    void trackLevelStartEvent(const char* level);
-
-    void trackLevelCompleteEvent(const char* level, const char* score, const char* stars, const char* turns);
-
-    void trackLevelFailed(const char* level, const char* score, const char* turns);
-
     void trackTutorialCompleteEvent();
     
     void trackTutorialSkippedEvent();
-
+    
     void trackRegisterEvent(const char* platform);
 
     void trackShareEvent(const char* platform);
@@ -84,25 +104,27 @@ extern "C" {
 
     // --- Config ---
     
-    char* getConfigNative ();
+    char* getConfigNative();
     
-    char* getConfigValueNative (const char* keyName);
+    char* getConfigValueNative(const char* keyName);
     
     // --- Packages & Promotions ---
     
-    void requestPackagesNative ();
+    void requestPackagesNative();
     
-    char* getPackageNative (const char* keyName);
+    char* getPackageNative(const char* keyName);
     
-    char* getAllPackagesNative ();
+    char* getAllPackagesNative();
     
-    char* getPromotionNative (const char* keyName);
+    char* getPromotionNative(const char* keyName);
 
     // --- ADS ---
     
-    void showMoreAppsNative ();
+    void showMoreAppsNative();
+    
+    void requestRewardVideoNative(const char* rewardType);
 
-    void playRewardVideoNative ();
+    void playRewardVideoNative();
     
     void devRequestAdNative(const char* providerName, const char* adTypeName, const bool parentalGate);
     
@@ -118,23 +140,29 @@ extern "C" {
     
     // --- Game & Player data ---
     
-    void updatePlayerDataNative ();
+    void updatePlayerDataNative();
 
-    char* getWalletNative ();
+    char* getWalletNative();
     
-    char* getSpilGameDataNative ();
+    char* getSpilGameDataNative();
     
-    char* getInventoryNative ();
+    char* getInventoryNative();
     
-    void addCurrencyToWalletNative (int currencyId, int amount, char* reasonName);
+    void addCurrencyToWalletNative(int currencyId, int amount, char* reasonName, char* location);
     
-    void subtractCurrencyFromWalletNative(int currencyId, int amount, char* reasonName);
+    void subtractCurrencyFromWalletNative(int currencyId, int amount, char* reasonName, char* location);
     
-    void addItemToInventoryNative (int itemId, int amount, char* reasonName);
+    void addItemToInventoryNative(int itemId, int amount, char* reasonName, char* location);
     
-    void subtractItemFromInventoryNative (int itemId, int amount, char* reasonName);
+    void subtractItemFromInventoryNative(int itemId, int amount, char* reasonName, char* location);
     
-    void consumeBundleNative (int itemId, char* reasonName);
+    void buyBundleNative(int itemId, char* reasonName, char* location);
+    
+    void resetPlayerDataNative();
+    
+    void resetInventoryNative();
+    
+    void resetWalletNative();
     
     // --- Customer support ---
     
@@ -171,6 +199,6 @@ extern "C" {
 
 #endif
 
-+ (void) sendMessage:(NSString*)messageName toObject:(NSString*)objectName withParameter:(NSString*)parameterString;
++ (void)sendMessage:(NSString*)messageName toObject:(NSString*)objectName withParameter:(NSString*)parameterString;
 
 @end

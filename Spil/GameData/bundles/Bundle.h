@@ -7,20 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "JSONModel.h"
 #import "BundleItem.h"
 #import "BundlePrice.h"
 
-@protocol Bundle
-@end
-
-@interface Bundle : JSONModel
+@interface Bundle : NSObject
 
 @property (assign, nonatomic) int id;
 @property (strong, nonatomic) NSString *name;
-@property (strong, nonatomic) NSMutableArray<BundlePrice> *prices; // Array of BundlePrice's
-@property (strong, nonatomic) NSMutableArray<BundleItem> *items; // Array of BundleItem's
+@property (strong, nonatomic) NSMutableArray *prices; // Array of BundlePrice's
+@property (strong, nonatomic) NSMutableArray *items; // Array of BundleItem's
 
--(id)init;
+-(id)initWithDictionary:(NSDictionary*)data;
+
+-(NSDictionary*)toJSONObject;
+
+-(NSArray*)getItemsJSONArray;
+-(NSArray*)getPricesJSONArray;
 
 @end
