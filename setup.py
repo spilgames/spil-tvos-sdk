@@ -148,8 +148,8 @@ for file in os.listdir(os.getcwd() + '/SpilTV.framework'):
 
 # change build settings
 print 'Modifying project build settings'
-project.add_single_valued_flag('ENABLE_BITCODE', 'NO')
-project.add_other_ldflags(['-ObjC', '-Wl,-U,_UnitySendMessage'])
+project.add_single_valued_flag('ENABLE_BITCODE', 'YES')
+project.add_other_ldflags(['-ObjC'])
 project.add_framework_search_paths('$(PROJECT_DIR)', recursive=False)
 project.add_framework_search_paths('$(PROJECT_DIR)/SpilTV.framework/Frameworks', recursive=False)
 

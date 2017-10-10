@@ -31,14 +31,9 @@
     NSLog(@"[HookBridge] SendMessage to object: %@ with method: %@ with params: %@", objectName, messageName, parameterString);
     
     if([[SpilEventTracker sharedInstance] isUnity]) {
-        @try {
             UnitySendMessage([objectName cStringUsingEncoding:NSUTF8StringEncoding],
                              [messageName cStringUsingEncoding:NSUTF8StringEncoding],
                              [parameterString cStringUsingEncoding:NSUTF8StringEncoding]);
-        }
-        @catch (NSException *exception) {
-            NSLog(@"[HookBridge] UnitySendMessage, exception:%@",exception.reason);
-        }
     }
 }
 

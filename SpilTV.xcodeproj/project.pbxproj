@@ -168,7 +168,6 @@
 		1435C88A1D6592FE000EAA9F /* Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Util.m; sourceTree = "<group>"; };
 		14828BB11DA274FC00414EA7 /* NotificationUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationUtil.h; sourceTree = "<group>"; };
 		14828BB21DA274FC00414EA7 /* NotificationUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationUtil.m; sourceTree = "<group>"; };
-		14E5D4AE1DEED750000AE2EA /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		CC21F1FA1CD8820A00EC9020 /* SpilAppStoreHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpilAppStoreHandler.h; sourceTree = "<group>"; };
 		CC21F1FB1CD8820A00EC9020 /* SpilAppStoreHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpilAppStoreHandler.m; sourceTree = "<group>"; };
 		CC21F1FE1CD8D16000EC9020 /* AppStoreRequestData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppStoreRequestData.h; sourceTree = "<group>"; };
@@ -244,7 +243,6 @@
 		1094853D1BBD7D2D009D1B46 = {
 			isa = PBXGroup;
 			children = (
-				14E5D4AE1DEED750000AE2EA /* module.modulemap */,
 				109485491BBD7D2E009D1B46 /* Spil */,
 				109485481BBD7D2E009D1B46 /* Products */,
 				1094854C1BBD7D2E009D1B46 /* Info.plist */,
@@ -841,7 +839,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Spil",
@@ -877,7 +875,7 @@
 				);
 				LINKER_DISPLAYS_MANGLED_NAMES = NO;
 				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = module.modulemap;
+				MODULEMAP_FILE = "";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				OTHER_LIBTOOLFLAGS = "";
@@ -909,7 +907,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Spil",
@@ -945,7 +943,7 @@
 				);
 				LINKER_DISPLAYS_MANGLED_NAMES = NO;
 				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = module.modulemap;
+				MODULEMAP_FILE = "";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				OTHER_LIBTOOLFLAGS = "";
